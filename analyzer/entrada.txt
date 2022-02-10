@@ -1,0 +1,1 @@
+mkdisk  -path = /media/gerson/discos/disco1.dk -u=K -f=wf -size=91
