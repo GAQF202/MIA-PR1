@@ -29,19 +29,18 @@ CHAR {LETTER}?
 CADENA {LETTER}({LETTER}|{DIGIT}|"_"|".")*
 /*POSIBLE CAMBIO*/
 /*r'\".*?\"'*/
-BLANK_SPACE [\t\r\f\n" "]
+BLANK_SPACE [\t\r\f\n" "\"]
 
 
 %%
 "mkdisk"    { yylval.TEXT = (char*)"mkdisk"; return mkdisk; }
 "rmdisk"    { yylval.TEXT = (char*)"rmdisk"; return rmdisk; }
+"fdisk"     { yylval.TEXT = (char*)"fdisk"; return fdisk; }
 
 "-size"     { yylval.TEXT = (char*)"-size"; return size; }
-"-f"        { yylval.TEXT = (char*)"-f"; return adjustment; }
-"-u"        { yylval.TEXT = (char*)"-u"; return unit; }
-"-path"     { yylval.TEXT = (char*)"-path"; return path; }
+"-fit"      { yylval.TEXT = (char*)"-fit"; return adjustment; }
 "-unit"     { yylval.TEXT = (char*)"-unit"; return unit; }
-
+"-path"     { yylval.TEXT = (char*)"-path"; return path; }
 "-type"     { yylval.TEXT = (char*)"-type"; return type; }
 "-delete"   { yylval.TEXT = (char*)"-delete"; return deleteToken; }
 "-name"     { yylval.TEXT = (char*)"-name"; return name; }

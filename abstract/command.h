@@ -52,4 +52,22 @@ class rmdiskCmd : public command{
         string path;
 };
 
+// FDISK
+class fdiskCmd : public command{
+    public:
+        fdiskCmd();
+        void assignParameters(parameter* directives[100], int size);
+        void execute();
+        
+        //PARAMETROS
+        int size;
+        string unit;
+        string path;
+        string type;
+        string fit;
+        string deleted;
+        string name;
+        int add;
+};
+
 #endif

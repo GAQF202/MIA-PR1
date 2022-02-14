@@ -51,20 +51,21 @@ extern int yydebug;
   {
     mkdisk = 258,
     rmdisk = 259,
-    size = 260,
-    adjustment = 261,
-    unit = 262,
-    path = 263,
-    type = 264,
-    deleteToken = 265,
-    name = 266,
-    add = 267,
-    number = 268,
-    CADENA = 269,
-    caracter = 270,
-    equals = 271,
-    slash = 272,
-    dot = 273
+    fdisk = 260,
+    size = 261,
+    adjustment = 262,
+    unit = 263,
+    path = 264,
+    type = 265,
+    deleteToken = 266,
+    name = 267,
+    add = 268,
+    number = 269,
+    CADENA = 270,
+    caracter = 271,
+    equals = 272,
+    slash = 273,
+    dot = 274
   };
 #endif
 
@@ -82,7 +83,7 @@ union YYSTYPE
     float flotante;
     int entero;
 
-#line 86 "parser.h"
+#line 87 "parser.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -24,7 +24,7 @@ string make_absolute(string path){
 string toMayus(string cadena) {
     string res = cadena;
     for (int i = 0; i < res.length(); i++) res[i] = toupper(res[i]);
-    return cadena;
+    return res;
 }
 
 /*INICIA COMMAND*/

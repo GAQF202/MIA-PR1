@@ -5,12 +5,22 @@ using namespace std;
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
+struct Partition
+{
+    char name[16];
+    char status;
+    char type;
+    int start;
+    char fit[4];
+    int size;
+};
+
 struct EBR
 {
     char name[16];
     char status;
     int start;
-    string fit;
+    char fit[4];
     int size;
     int next;
 };
@@ -18,10 +28,10 @@ struct EBR
 
 //ESTRUCT PARA EL MASTER BOOT RECORD
 struct MBR{
-    //Partition partitions[4];
+    Partition partitions[4];
     char date[18];
     int signature;
-    string fit;
+    char fit[4];
     int size;
 };
 

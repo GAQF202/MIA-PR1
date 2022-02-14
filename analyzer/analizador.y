@@ -43,6 +43,7 @@
 //TERMINAL TOKENS DECLARATIONS
 %token<TEXT> mkdisk;
 %token<TEXT> rmdisk;
+%token<TEXT> fdisk;
 
 // PARAMETERS
 %token<TEXT> size;
@@ -73,14 +74,15 @@
 %type<parametro> ADJUSTMENT;
 %type<parametro> UNIT;
 %type<parametro> PATH;
-/*%type<parametro> TYPE;
-%type<parametro> DELETE;
+%type<parametro> TYPE;
+%type<parametro> DELETEP;
 %type<parametro> NAME;
-%type<parametro> ADD;*/
+%type<parametro> ADD;
 
 //COMMANDS
 %type<queueT> MKDISKPAR;
 %type<queueT> RMDISKPAR;
+%type<queueT> FDISKPAR;
 %type<TEXT> DIRECTORY;
 
 %start START
@@ -100,6 +102,18 @@ START : START mkdisk MKDISKPAR
         c->assignParameters($3->cola,$3->size);
         c->execute();
       }
+      | START fdisk FDISKPAR
+      {
+        fdiskCmd *c = new fdiskCmd();
+        c->assignParameters($3->cola,$3->size);
+        c->execute();
+      }
+      | fdisk FDISKPAR
+      {
+        fdiskCmd *c = new fdiskCmd();
+        c->assignParameters($2->cola,$2->size);
+        c->execute();
+      }
       | rmdisk RMDISKPAR
       {
         rmdiskCmd *c = new rmdiskCmd();
@@ -113,6 +127,23 @@ START : START mkdisk MKDISKPAR
         c->assignParameters($2->cola,$2->size);
         c->execute();
       }
+
+FDISKPAR : FDISKPAR SIZE {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | FDISKPAR UNIT {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | FDISKPAR PATH {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | FDISKPAR TYPE {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | FDISKPAR ADJUSTMENT{queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | FDISKPAR DELETEP {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | FDISKPAR NAME {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | FDISKPAR ADD {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | ADD {queue *res = new queue();res->push($1);$$ = res;}
+         | NAME {queue *res = new queue();res->push($1);$$ = res;}
+         | DELETEP {queue *res = new queue();res->push($1);$$ = res;}
+         | ADJUSTMENT {queue *res = new queue();res->push($1);$$ = res;}
+         | TYPE {queue *res = new queue();res->push($1);$$ = res;}
+         | PATH {queue *res = new queue();res->push($1);$$ = res;}
+         | UNIT {queue *res = new queue();res->push($1);$$ = res;}
+         | SIZE {queue *res = new queue();res->push($1);$$ = res;}
 
 RMDISKPAR : PATH
           {
@@ -214,25 +245,26 @@ DIRECTORY : DIRECTORY slash CADENA
             //strcpy( res, "" ); //POSIBLE CAMBIOOO
           }
 
-/*TYPE : type equals caracter 
+TYPE : type equals caracter 
      {  
-        //$$ = make_parameter($1,$3,0); 
+        $$ = make_parameter($1,$3,0); 
      } 
 
-DELETE : delete equals CADENA 
+DELETEP : deleteToken equals CADENA 
        {  
-        //$$ = make_parameter($1,$3,0); 
+        $$ = make_parameter($1,$3,0); 
        } 
 
 NAME : name equals CADENA 
      {  
-        //$$ = make_parameter($1,$3,0); 
+        $$ = make_parameter($1,$3,0); 
      } 
 
 ADD : add equals number 
-    {  
-        //$$ = make_parameter($1,$3,0); 
-    } */
+    {   
+        float res=std::stof($3);
+        $$ = make_parameter($1,(char*)"",res);
+    } 
 
 %%
 

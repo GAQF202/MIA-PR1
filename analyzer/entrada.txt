@@ -1,1 +1,3 @@
-mkdisk  -path = /media/gerson/discos/disco1.dk -u=K -f=wf -size=91
+mkdisk  -path = "/media/gerson/discos/disco1.dk" -unit=K -fit=wf -size=91
+
+fdisk -size=130 -path=/hola/yea.dk  -type=E -unit=K -name = "particion1" -add=54646
