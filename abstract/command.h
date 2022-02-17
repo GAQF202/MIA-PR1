@@ -2,6 +2,7 @@
 #include <string>
 using namespace std;
 #include <vector>
+#include "../allStructs/structs.h"
 
 #ifndef COMMAND_H
 #define COMMAND_H
@@ -58,6 +59,7 @@ class fdiskCmd : public command{
         fdiskCmd();
         void assignParameters(parameter* directives[100], int size);
         void execute();
+        void sortPartitions(Partition a[4]);
         
         //PARAMETROS
         int size;

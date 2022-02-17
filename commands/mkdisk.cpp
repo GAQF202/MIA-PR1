@@ -13,7 +13,7 @@ void mkdiskCmd::assignParameters(parameter* directives[100], int size){
             if(strcmp(directives[i]->name,(char*)"-size") == 0){
                 this->size = directives[i]->intValue;
             }else if(strcmp(directives[i]->name,(char*)"-fit") == 0){
-                this->f = directives[i]->stringValue;
+                this->f = toMayus(directives[i]->stringValue);
             }else if(strcmp(directives[i]->name,(char*)"-unit") == 0){
                 this->u = toMayus(directives[i]->stringValue);
             }else if(strcmp(directives[i]->name,(char*)"-path") == 0){
@@ -25,6 +25,18 @@ void mkdiskCmd::assignParameters(parameter* directives[100], int size){
 }
 
 void mkdiskCmd::execute(){
+
+    // VERIFICA QUE EL AJUSTE SELECCIONADO SEA UNO DE LOS CORRECTOS
+    if(!((this->f == "BF") || (this->f == "FF") || (this->f == "WF"))){
+        cout << "El ajuste indicado en el disco " << this->path << " no es correcto" << endl ;
+        return;
+    }
+
+    // VERIFICA QUE EL DISCO AUN NO EXISTA EN LA RUTA ESPECIFICADA
+    if(FILE *file = fopen(this->path.c_str(),"r")){
+        cout << "Error el disco que desea crear ya existe en la ruta:" << this->path << endl;
+        return;
+    }
 
     char buffer[1024];
 
@@ -55,7 +67,7 @@ void mkdiskCmd::execute(){
             Partition initial_partition;
             strcpy(initial_partition.name,"");
             initial_partition.status = '0';
-            initial_partition.type = 'P';
+            strcpy(initial_partition.type,"P");
             initial_partition.start = -1;
             initial_partition.size = -1;
             strcpy(initial_partition.fit,"WF");
@@ -67,7 +79,7 @@ void mkdiskCmd::execute(){
 
             //ASIGNACION DE ATRIBUTOS DEL MBR
             strcpy(mbr_disk.fit,this->f.c_str());
-            mbr_disk.size = this->size*multiplicator;
+            mbr_disk.size = this->size*multiplicator*1024;
 
             fseek(disk_file,0,SEEK_SET);
             fwrite(&mbr_disk, sizeof(MBR), 1, disk_file);

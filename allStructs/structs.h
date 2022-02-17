@@ -9,7 +9,7 @@ struct Partition
 {
     char name[16];
     char status;
-    char type;
+    char type[1];
     int start;
     char fit[4];
     int size;
@@ -25,8 +25,13 @@ struct EBR
     int next;
 };
 
+// STRUCT PARA CONTROLAR LOS ESPACIOS VACIOS DEL DISCO
+struct voidEspace{
+    int start;
+    int size;
+};
 
-//ESTRUCT PARA EL MASTER BOOT RECORD
+// ESTRUCT PARA EL MASTER BOOT RECORD
 struct MBR{
     Partition partitions[4];
     char date[18];
