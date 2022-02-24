@@ -16,7 +16,7 @@ void rmdiskCmd::assignParameters(parameter* directives[100], int size){
 void rmdiskCmd::execute(){
     string confirmation = "";
 
-    cout << "Desea eliminar el archivo: " << this->path << " ?[s/n]";
+    cout << "Desea eliminar el archivo: " << this->path << " ?[s/n]" << endl;;
     cin >> confirmation;
 
     if(confirmation == "s" || confirmation == "S"){

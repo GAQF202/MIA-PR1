@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-using namespace std;
+using namespace std;    
 
 #ifndef STRUCTS_H
 #define STRUCTS_H
@@ -9,10 +9,11 @@ struct Partition
 {
     char name[16];
     char status;
-    char type[1];
+    char type;
     int start;
-    char fit[4];
+    char fit[2];
     int size;
+    int next;
 };
 
 struct EBR

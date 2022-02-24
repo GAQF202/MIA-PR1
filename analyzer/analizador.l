@@ -29,6 +29,7 @@ CHAR {LETTER}?
 CADENA {LETTER}({LETTER}|{DIGIT}|"_"|".")*
 /*POSIBLE CAMBIO*/
 /*r'\".*?\"'*/
+COMMENT #.*
 BLANK_SPACE [\t\r\f\n" "\"]
 
 
@@ -59,5 +60,6 @@ BLANK_SPACE [\t\r\f\n" "\"]
 
 
 {BLANK_SPACE} {}
+{COMMENT} {}
 . yyerror("mincra");
 %%

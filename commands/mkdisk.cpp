@@ -59,7 +59,9 @@ void mkdiskCmd::execute(){
             for(int i=0; i<1024; i++){
                 buffer[i] = '\0';
             }
-            for(int i=0; i<this->size*multiplicator; i++){
+            fseek(disk_file, 0, SEEK_SET);
+            for (int i = 0; i < this->size * multiplicator; i++)
+            {
                 fwrite(&buffer,1024,1,disk_file);
             }
 
@@ -67,10 +69,11 @@ void mkdiskCmd::execute(){
             Partition initial_partition;
             strcpy(initial_partition.name,"");
             initial_partition.status = '0';
-            strcpy(initial_partition.type,"P");
+            initial_partition.type = 'P';
             initial_partition.start = -1;
             initial_partition.size = -1;
-            strcpy(initial_partition.fit,"WF");
+            strcpy( initial_partition.fit,this->f.c_str());
+            initial_partition.next = -1;
 
             // INGRESO LAS CUATRO PARTICIONES VACIAS AL MBR
             for (int i=0; i<4; i++){
@@ -80,6 +83,7 @@ void mkdiskCmd::execute(){
             //ASIGNACION DE ATRIBUTOS DEL MBR
             strcpy(mbr_disk.fit,this->f.c_str());
             mbr_disk.size = this->size*multiplicator*1024;
+
 
             fseek(disk_file,0,SEEK_SET);
             fwrite(&mbr_disk, sizeof(MBR), 1, disk_file);

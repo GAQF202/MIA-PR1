@@ -1,5 +1,19 @@
+
 rmdisk -path = "/media/gerson/discos/disco1.dk"
 
 mkdisk  -path = "/media/gerson/discos/disco1.dk" -unit=k -fit=wf -size=91
 
-fdisk -size=30 -path=/media/gerson/discos/disco1.dk  -type=e -fit=bf -unit=k -name = "particion1" -add=54646
+#CREACION DE PARTICIONES
+
+fdisk -size=10 -path=/media/gerson/discos/disco1.dk  -type=e -fit=bf -unit=k -name = "particion1" #-add=54646
+
+fdisk -size=5 -path=/media/gerson/discos/disco1.dk  -type=p -fit=bf -unit=k -name = "particion3" #-add=54646
+
+fdisk -size=6 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = "yea" #-add=54646
+
+fdisk -size=3 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = "newLogic" #-add=54646
+
+fdisk -size=5 -path=/media/gerson/discos/disco1.dk  -type=p -fit=bf -unit=k -name = "maincra" #-add=54646
+
+fdisk -path=/media/gerson/discos/disco1.dk  -type=p -unit=k -name = "maincra" -add=1000
+
