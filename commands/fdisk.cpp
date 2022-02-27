@@ -85,7 +85,7 @@ void fdiskCmd::execute(){
     }
 
     if(this->path.length() != 0){
-        if(this->size != -1 || this->add != 0){
+        if(this->size != -1 || this->add != 0 || this->deleted!=""){
             if(this->name.length() != 0){
 
                 //SE VERIFICA QUE EL DISCO EXISTA
@@ -114,8 +114,53 @@ void fdiskCmd::execute(){
                     // ORDENO LAS PARTICIONES DEL MBR SEGUN SU POSICION EN DISCO
                     this->sortPartitions(mbr.partitions);
 
+                    if(this->deleted != ""){
+                        int start_partition; // GUARDA LA PARTICION ENCONTRADA
+                        int end_partition; 
+                        Partition void_partition;
+                        int index_partition = -1; // BANDERA QUE INDICA SI EXISTE LA PARTICION
+
+                        // RECORRE LAS PARTICIONES DEL MBR
+                        for(int p=0; p<4; p++){
+                            if(mbr.partitions[p].name == this->name){
+                                start_partition = mbr.partitions[p].start;
+                                end_partition = start_partition + mbr.partitions[p].size;
+                                index_partition = p;
+                            }
+                        }  
+                        // VALIDA QUE LA PARTICION HAYA SIDO ENCONTRADA  
+                        if(index_partition == -1){
+                            cout << "Error: al eliminar la partición "<< this->name <<" debido a que no se encontró en el disco" << endl;
+                        // SI NO HAY ERROR CALCULO EL ESPACIO LIBRE A UTILIZAR
+                        }else{
+                            char blank_space = '\0';
+                            // LLENO CON CEROS TODAS LAS POSICIONES QUE OCUPA EN EL ARCHIVO LA PARTICION
+                            for(int i=start_partition; i<end_partition;i++){
+                                fseek(file,i,SEEK_SET);
+                                fwrite(&blank_space,sizeof(blank_space),1,file);
+                            }
+
+                            // CREO UNA PARTICION VACIA
+                            strcpy(void_partition.name,"siu");
+                            void_partition.status = '0';
+                            void_partition.type = 'P';
+                            void_partition.start = -1;
+                            void_partition.size = -1;
+                            strcpy( void_partition.fit,"");
+                            void_partition.next = -1;
+                            mbr.partitions[index_partition] = void_partition;
+
+                            //REESCRIBO EL MBR CON LA PARTICION YA ELIMINADA
+                            fseek(file,0,SEEK_SET);
+                            fwrite(&mbr,sizeof(MBR),1,file);
+                            fclose(file);
+                        }
+                        return;
+                    }
+
                     // SI EXISTE UN "ADD"
                     if(this->add != 0){
+                        int ver=0;
                         if(this->type == "L"){
                             cout << "Modificar tamanio de logica" << endl;
                         }else{
@@ -124,7 +169,7 @@ void fdiskCmd::execute(){
 
                             // RECORRE LAS PARTICIONES DEL MBR
                             for(int p=0; p<4; p++){
-                                //cout << mbr.partitions[p].start << endl;
+                                // cout << mbr.partitions[p].start << " " << p << endl;
                                 if(mbr.partitions[p].name == this->name){
                                     partition_found = mbr.partitions[p];
                                     index_partition = p;
@@ -133,6 +178,7 @@ void fdiskCmd::execute(){
                             // VALIDA QUE LA PARTICION HAYA SIDO ENCONTRADA  
                             if(index_partition == -1){
                                 cout << "Error: al agregar espacio la partición "<< this->name <<" no se encontró" << endl;
+                            // SI NO HAY ERROR CALCULO EL ESPACIO LIBRE A UTILIZAR
                             }else{
                                 int avalaible_space;// VARIABLE PARA GUARDAR EL CALCULO DE ESPACIO VACIO
                                 // SI ES LA ULTIMA CALCULO EL ESPACIO CON EL FINAL DEL MBR
@@ -141,8 +187,36 @@ void fdiskCmd::execute(){
                                 }else{
                                     avalaible_space = mbr.partitions[index_partition+1].start - (partition_found.start + partition_found.size) - 2;
                                 }
+                                // VALIDACIONES PARA AGREGAR O QUITAR ESPACIO
+                                if(this->add > 0){
+                                    if(avalaible_space >= this->add*multiplicator*1024){
+                                        partition_found.size += this->add*multiplicator*1024;
+                                    }else{
+                                        cout << "Error: No se puede agregar espacio a la particion "<< this->name <<" porque no hay espacio libre suficiente" << endl;
+                                    }
+                                }else{
+                                    // VALIDA QUE EL ESPACIO DE LA PARTICION NO QUEDE NEGATIVO
+                                    if((partition_found.size + this->add*multiplicator*1024) >= 0){
+                                        partition_found.size += this->add*multiplicator*1024;
+                                    }else{
+                                        cout << "Error: No se puede quitar espacio a la particion "<< this->name <<" porque no hay espacio libre suficiente" << endl;
+                                    }
+                                }
                             }
+                            mbr.partitions[index_partition] = partition_found;
+                            // REESCRIBO EL MBR
+                            fseek(file,0,SEEK_SET);
+                            fwrite(&mbr,sizeof(MBR),1,file);
+                            // REESCRIBO LA PARTICION
+                            fseek(file,partition_found.start,SEEK_SET);
+                            fwrite(&partition_found,sizeof(Partition),1,file);
+                            fclose(file);
+                            //ver = partition_found.start;
                         }
+                        /*Partition hola;
+                        fseek(file,ver,SEEK_SET);
+                        fread(&hola,sizeof(Partition),1,file);
+                        cout << hola.fit << endl;*/
                     return;
                     }
 
@@ -326,7 +400,7 @@ void fdiskCmd::execute(){
                         strcpy(newPart.name,this->name.c_str());
                         newPart.type = this->type[0];
                         newPart.start = selectSpace;
-                        strcpy( newPart.fit,this->name.c_str());
+                        strcpy( newPart.fit,this->fit.c_str());
                         newPart.next = -1;
                         newPart.size = this->size*multiplicator*1024;
 

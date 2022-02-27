@@ -24,7 +24,7 @@ int yylex();
 DIGIT [0-9]
 LETTER [a-zA-AñÑ]
 
-NUMBER {DIGIT}+("."{DIGIT}+)?
+NUMBER -*{DIGIT}+("."{DIGIT}+)?
 CHAR {LETTER}?
 CADENA {LETTER}({LETTER}|{DIGIT}|"_"|".")*
 /*POSIBLE CAMBIO*/
@@ -37,6 +37,8 @@ BLANK_SPACE [\t\r\f\n" "\"]
 "mkdisk"    { yylval.TEXT = (char*)"mkdisk"; return mkdisk; }
 "rmdisk"    { yylval.TEXT = (char*)"rmdisk"; return rmdisk; }
 "fdisk"     { yylval.TEXT = (char*)"fdisk"; return fdisk; }
+"mount"     { yylval.TEXT = (char*)"mount"; return mount; }
+"unmount"   { yylval.TEXT = (char*)"unmount"; return unmount; }
 
 "-size"     { yylval.TEXT = (char*)"-size"; return size; }
 "-fit"      { yylval.TEXT = (char*)"-fit"; return adjustment; }
@@ -46,6 +48,7 @@ BLANK_SPACE [\t\r\f\n" "\"]
 "-delete"   { yylval.TEXT = (char*)"-delete"; return deleteToken; }
 "-name"     { yylval.TEXT = (char*)"-name"; return name; }
 "-add"      { yylval.TEXT = (char*)"-add"; return add; }
+"-id"       { yylval.TEXT = (char*)"-id"; return id; }
 
 
 

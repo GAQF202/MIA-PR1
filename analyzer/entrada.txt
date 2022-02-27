@@ -15,5 +15,7 @@ fdisk -size=3 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -nam
 
 fdisk -size=5 -path=/media/gerson/discos/disco1.dk  -type=p -fit=bf -unit=k -name = "maincra" #-add=54646
 
-fdisk -path=/media/gerson/discos/disco1.dk  -type=p -unit=k -name = "maincra" -add=1000
+fdisk -path=/media/gerson/discos/disco1.dk  -type=p -unit=k -name = "maincra" -add=-3
+
+fdisk -name = maincra -delete=full -path=/media/gerson/discos/disco1.dk
 

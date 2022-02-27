@@ -44,6 +44,8 @@
 %token<TEXT> mkdisk;
 %token<TEXT> rmdisk;
 %token<TEXT> fdisk;
+%token<TEXT> mount;
+%token<TEXT> unmount;
 
 // PARAMETERS
 %token<TEXT> size;
@@ -54,6 +56,7 @@
 %token<TEXT> deleteToken;
 %token<TEXT> name;
 %token<TEXT> add;
+%token<TEXT> id;
 
 // TYPES
 %token<TEXT> number; // "int"
@@ -78,11 +81,14 @@
 %type<parametro> DELETEP;
 %type<parametro> NAME;
 %type<parametro> ADD;
+%type<parametro> ID;
 
 //COMMANDS
 %type<queueT> MKDISKPAR;
 %type<queueT> RMDISKPAR;
 %type<queueT> FDISKPAR;
+%type<queueT> MOUNTPAR;
+%type<queueT> UNMOUNTPAR;
 %type<TEXT> DIRECTORY;
 
 %start START
@@ -144,6 +150,14 @@ FDISKPAR : FDISKPAR SIZE {queue *res = new queue();$1->push($2);res->append($1);
          | PATH {queue *res = new queue();res->push($1);$$ = res;}
          | UNIT {queue *res = new queue();res->push($1);$$ = res;}
          | SIZE {queue *res = new queue();res->push($1);$$ = res;}
+
+MOUNTPAR : MOUNTPAR PATH {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | MOUNTPAR NAME {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | NAME {queue *res = new queue();res->push($1);$$ = res;}
+         | PATH {queue *res = new queue();res->push($1);$$ = res;}
+
+UNMOUNTPAR :  UNMOUNTPAR ID {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+           | ID {queue *res = new queue();res->push($1);$$ = res;}
 
 RMDISKPAR : PATH
           {
@@ -265,6 +279,11 @@ ADD : add equals number
         float res=std::stof($3);
         $$ = make_parameter($1,(char*)"",res);
     } 
+
+ID : id equals CADENA 
+     {  
+        $$ = make_parameter($1,$3,0); 
+     } 
 
 %%
 
