@@ -72,4 +72,16 @@ class fdiskCmd : public command{
         int add;
 };
 
+// MOUNT
+class mountCmd : public command{
+    public:
+        mountCmd();
+        void assignParameters(parameter* directives[100], int size);
+        void execute();
+        
+        //PARAMETROS
+        string path;
+        string name;
+};
+
 #endif

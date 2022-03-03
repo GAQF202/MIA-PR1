@@ -114,6 +114,14 @@ START : START mkdisk MKDISKPAR
         c->assignParameters($3->cola,$3->size);
         c->execute();
       }
+      | START mount MOUNTPAR
+      {
+        mountCmd *c = new mountCmd(); c->assignParameters($3->cola,$3->size);c->execute();
+      }
+      | START unmount UNMOUNTPAR
+      {
+        //fdiskCmd *c = new fdiskCmd(); c->assignParameters($3->cola,$3->size);c->execute();
+      }
       | fdisk FDISKPAR
       {
         fdiskCmd *c = new fdiskCmd();
@@ -132,6 +140,16 @@ START : START mkdisk MKDISKPAR
         //ASIGNACION DE PARAMETROS
         c->assignParameters($2->cola,$2->size);
         c->execute();
+      }
+      | mount MOUNTPAR
+      {
+        //ASIGNACION DE PARAMETROS
+        mountCmd *c = new mountCmd();c->assignParameters($2->cola,$2->size);c->execute();
+      }
+      | unmount UNMOUNTPAR
+      {
+        //ASIGNACION DE PARAMETROS
+        //mkdiskCmd *c = new mkdiskCmd();c->assignParameters($2->cola,$2->size);c->execute();
       }
 
 FDISKPAR : FDISKPAR SIZE {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}

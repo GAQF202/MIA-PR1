@@ -41,4 +41,13 @@ struct MBR{
     int size;
 };
 
+// STRUCT PARA SABER QUE DISCOS TIENEN PARTICIONES MONTADAS EN RAM
+struct UsingDisk
+{
+    string name;
+    int amount = 0;
+    int number = 1;
+};
+
+
 #endif

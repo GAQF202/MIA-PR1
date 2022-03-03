@@ -289,7 +289,7 @@ void fdiskCmd::execute(){
                             
                             // MIENTRAS NO SE LLEGUE AL FINAL DE LA LISTA
                             while(temp.next != -1){
-                                //cout << temp.name << endl;
+                                
                                 previous = temp; // GUARDO EL TEMPORAL PARA "REGRESAR" EN LA LISTA
                                 fseek(file,temp.next,SEEK_SET);
                                 fread(&temp,sizeof(Partition),1,file);
@@ -327,8 +327,13 @@ void fdiskCmd::execute(){
                                 return;
                             }
                             initialStart = selectSpace;
-                        }
 
+                            temp.next = initialStart; // POSIBLE CAMBIO
+                            // SOBRESCRIBE LA PARTICION ANTERIOR
+                            fseek(file,temp.start,SEEK_SET);
+                            fwrite(&temp,sizeof(Partition),1,file);
+                        }
+                        
                         // ASIGNACION DE VALORES A LA PARTICION LOGICA
                         logical.start = initialStart;
                         logical.size = this->size * multiplicator * 1024; // GUARDO EL TAMANIO

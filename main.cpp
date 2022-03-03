@@ -12,7 +12,6 @@ int main()
        FILE *file = fopen(path.c_str(),"r");
        parse(file);
        //const char* path = "hola";
-       //ver(path);
-
+       //ver(path);List<int> list_1;      
        return 0;
 }

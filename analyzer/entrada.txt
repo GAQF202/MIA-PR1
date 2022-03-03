@@ -3,6 +3,8 @@ rmdisk -path = "/media/gerson/discos/disco1.dk"
 
 mkdisk  -path = "/media/gerson/discos/disco1.dk" -unit=k -fit=wf -size=91
 
+#mkdisk  -path = "/media/gerson/discos/carpeta/disco1.dk" -unit=k -fit=wf -size=91
+
 #CREACION DE PARTICIONES
 
 fdisk -size=10 -path=/media/gerson/discos/disco1.dk  -type=e -fit=bf -unit=k -name = "particion1" #-add=54646
@@ -11,11 +13,20 @@ fdisk -size=5 -path=/media/gerson/discos/disco1.dk  -type=p -fit=bf -unit=k -nam
 
 fdisk -size=6 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = "yea" #-add=54646
 
-fdisk -size=3 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = "newLogic" #-add=54646
+fdisk -size=1 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = "newLogic"
+
+fdisk -size=1 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = "newLogic1"
+
+fdisk -size=1 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = newLogic3
 
 fdisk -size=5 -path=/media/gerson/discos/disco1.dk  -type=p -fit=bf -unit=k -name = "maincra" #-add=54646
 
 fdisk -path=/media/gerson/discos/disco1.dk  -type=p -unit=k -name = "maincra" -add=-3
 
 fdisk -name = maincra -delete=full -path=/media/gerson/discos/disco1.dk
+
+mount -name = yea -path=/media/gerson/discos/disco1.dk
+mount -name = newLogic -path=/media/gerson/discos/disco1.dk
+mount -name = newLogic1 -path=/media/gerson/discos/disco1.dk
+mount -name = newLogic1 -path=/media/gerson/discos/disco1.dk
 
