@@ -66,9 +66,9 @@ extern int yydebug;
     number = 272,
     CADENA = 273,
     caracter = 274,
-    equals = 275,
-    slash = 276,
-    dot = 277
+    identificador = 275,
+    equals = 276,
+    slash = 277
   };
 #endif
 

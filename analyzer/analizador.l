@@ -26,6 +26,7 @@ LETTER [a-zA-AñÑ]
 
 NUMBER -*{DIGIT}+("."{DIGIT}+)?
 CHAR {LETTER}?
+IDENTIFICADOR {NUMBER}({LETTER}|{DIGIT}|"_"|".")
 CADENA {LETTER}({LETTER}|{DIGIT}|"_"|".")*
 /*POSIBLE CAMBIO*/
 /*r'\".*?\"'*/
@@ -55,11 +56,11 @@ BLANK_SPACE [\t\r\f\n" "\"]
 {CHAR}      { yylval.TEXT = yytext; return caracter; }
 {CADENA}    { yylval.TEXT = yytext; return CADENA; }
 {NUMBER}    { yylval.TEXT = yytext; return number; }
+{IDENTIFICADOR} { yylval.TEXT = yytext; return identificador; }
 
 
 "="         { yylval.TEXT = (char*)"="; return equals; }
 "/"         { yylval.TEXT = (char*)"/"; return slash; }
-"."         { yylval.TEXT = (char*)"."; return dot; }
 
 
 {BLANK_SPACE} {}

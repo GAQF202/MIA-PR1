@@ -9,7 +9,7 @@
 #include <cstdio>
 #include <string>
 using namespace std;
-
+lista global_list;
 mountCmd::mountCmd(){}
 
 void mountCmd::assignParameters(parameter* directives[100], int size){

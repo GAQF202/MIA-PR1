@@ -29,4 +29,5 @@ mount -name = yea -path=/media/gerson/discos/disco1.dk
 mount -name = newLogic -path=/media/gerson/discos/disco1.dk
 mount -name = newLogic1 -path=/media/gerson/discos/disco1.dk
 mount -name = newLogic1 -path=/media/gerson/discos/disco1.dk
+unmount -id=571C
 

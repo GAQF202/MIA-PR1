@@ -84,4 +84,15 @@ class mountCmd : public command{
         string name;
 };
 
+// UNMOUNT
+class unmountCmd : public command{
+    public:
+        unmountCmd();
+        void assignParameters(parameter* directives[100], int size);
+        void execute();
+        
+        //PARAMETROS
+        string id;
+};
+
 #endif

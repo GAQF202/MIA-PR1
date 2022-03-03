@@ -69,7 +69,10 @@ void lista::Borrar(string v){
       anterior = nodo;
       nodo = nodo->siguiente;
    }
-   if(!nodo /*|| nodo->valor != v*/) return;
+   if(!nodo /*|| nodo->valor != v*/){ 
+       cout << "No se encontró la partición " << v << " a desmontar" << endl;
+       return;
+   }
    else { // Borrar el nodo
       if(!anterior) // Primer elemento
          primero = nodo->siguiente;

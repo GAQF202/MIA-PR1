@@ -62,11 +62,11 @@
 %token<TEXT> number; // "int"
 %token<TEXT> CADENA; // STRING
 %token<TEXT> caracter; // CHAR
+%token<TEXT> identificador; // ID
 
 //SYMBOLS DECLARATIONS
 %token<TEXT> equals;
 %token<TEXT> slash;
-%token<TEXT> dot;
 
 //NON TERMINALS TOKENS DECLARATIONS
 //INITIAL SYMBOL
@@ -120,7 +120,7 @@ START : START mkdisk MKDISKPAR
       }
       | START unmount UNMOUNTPAR
       {
-        //fdiskCmd *c = new fdiskCmd(); c->assignParameters($3->cola,$3->size);c->execute();
+        unmountCmd *c = new unmountCmd(); c->assignParameters($3->cola,$3->size);c->execute();
       }
       | fdisk FDISKPAR
       {
@@ -149,7 +149,7 @@ START : START mkdisk MKDISKPAR
       | unmount UNMOUNTPAR
       {
         //ASIGNACION DE PARAMETROS
-        //mkdiskCmd *c = new mkdiskCmd();c->assignParameters($2->cola,$2->size);c->execute();
+        unmountCmd *c = new unmountCmd();c->assignParameters($2->cola,$2->size);c->execute();
       }
 
 FDISKPAR : FDISKPAR SIZE {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
@@ -298,7 +298,7 @@ ADD : add equals number
         $$ = make_parameter($1,(char*)"",res);
     } 
 
-ID : id equals CADENA 
+ID : id equals identificador 
      {  
         $$ = make_parameter($1,$3,0); 
      } 

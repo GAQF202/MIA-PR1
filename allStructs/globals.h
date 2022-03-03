@@ -1,3 +1,3 @@
 #include "../estructures/simpleList.h"
 
-static lista global_list; /* variable global */
+extern lista global_list; /* variable global */
