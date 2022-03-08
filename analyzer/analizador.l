@@ -26,7 +26,7 @@ LETTER [a-zA-AñÑ]
 
 NUMBER -*{DIGIT}+("."{DIGIT}+)?
 CHAR {LETTER}?
-IDENTIFICADOR {NUMBER}({LETTER}|{DIGIT}|"_"|".")
+IDENTIFICADOR {NUMBER}({LETTER}|{DIGIT}|"_"|".")*
 CADENA {LETTER}({LETTER}|{DIGIT}|"_"|".")*
 /*POSIBLE CAMBIO*/
 /*r'\".*?\"'*/
@@ -40,6 +40,11 @@ BLANK_SPACE [\t\r\f\n" "\"]
 "fdisk"     { yylval.TEXT = (char*)"fdisk"; return fdisk; }
 "mount"     { yylval.TEXT = (char*)"mount"; return mount; }
 "unmount"   { yylval.TEXT = (char*)"unmount"; return unmount; }
+"mkfs"      { yylval.TEXT = (char*)"mkfs"; return mkfs; }
+"login"       { yylval.TEXT = (char*)"rep"; return rep; }
+
+"exec"      { yylval.TEXT = (char*)"exec"; return exec; }
+"rep"       { yylval.TEXT = (char*)"rep"; return rep; }
 
 "-size"     { yylval.TEXT = (char*)"-size"; return size; }
 "-fit"      { yylval.TEXT = (char*)"-fit"; return adjustment; }
@@ -50,6 +55,8 @@ BLANK_SPACE [\t\r\f\n" "\"]
 "-name"     { yylval.TEXT = (char*)"-name"; return name; }
 "-add"      { yylval.TEXT = (char*)"-add"; return add; }
 "-id"       { yylval.TEXT = (char*)"-id"; return id; }
+"-fs"       { yylval.TEXT = (char*)"-fs"; return fs; }
+"-ruta"     { yylval.TEXT = (char*)"-ruta"; return ruta; }
 
 
 

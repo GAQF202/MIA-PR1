@@ -7,6 +7,6 @@ bison analizador.y -o parser.cpp --defines=parser.h
 cd ..
 
 #COMPILAR ARCHIVOS .CPP
-g++ main.cpp ./abstract/command.cpp ./commands/*.cpp ./estructures/*.cpp ./analyzer/*.cpp
+g++ main.cpp ./abstract/command.cpp ./commands/*.cpp ./estructures/*.cpp ./analyzer/*.cpp ./allStructs/*.cpp
 
 ./a.out

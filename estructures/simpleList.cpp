@@ -37,14 +37,14 @@ bool lista::isMount(string partition_name){
    return estaMontada;
 }
 
-void lista::Insertar(string partition_name, string disk_name) {
+void lista::Insertar(string partition_name, string disk_name, int start) {
    pnodo anterior;
 
    // Si la lista está vacía
    if(ListaVacia()){//|| primero->valor > v) {
       // Asignamos a lista un nuevo nodo de valor v y
       // cuyo siguiente elemento es la lista actual
-      primero = new nodo(this->getId(disk_name), partition_name, primero);
+      primero = new nodo(this->getId(disk_name), partition_name, start, disk_name, primero);
       //primero = new nodo(v, primero);
    } else {
       // Buscar el nodo de valor menor a v
@@ -55,7 +55,7 @@ void lista::Insertar(string partition_name, string disk_name) {
         anterior = anterior->siguiente;
       // Creamos un nuevo nodo después del nodo anterior, y cuyo siguiente
       // es el siguiente del anterior
-      anterior->siguiente = new nodo(this->getId(disk_name), partition_name, anterior->siguiente);
+      anterior->siguiente = new nodo(this->getId(disk_name), partition_name, start, disk_name, anterior->siguiente);
       //anterior->siguiente = new nodo(v, anterior->siguiente);
    }
 }
@@ -80,6 +80,22 @@ void lista::Borrar(string v){
          anterior->siguiente = nodo->siguiente;
       delete nodo;
    }
+}
+
+pnodo lista::getElement(string v){
+   pnodo anterior, nodo;
+
+   nodo = primero;
+   anterior = NULL;
+   while(nodo && nodo->valor != v) {
+      anterior = nodo;
+      nodo = nodo->siguiente;
+   }
+   if(!nodo /*|| nodo->valor != v*/){ 
+       //cout << "No se encontró la partición " << v << " a desmontar" << endl;
+       return nodo;
+   }
+   return nodo;
 }
 
 void lista::Mostrar() {

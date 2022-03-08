@@ -11,17 +11,21 @@ using namespace std;
 
 class nodo {
    public:
-    nodo(string id, string disk_name, nodo *sig = NULL)
+    nodo(string id, string disk_name, int initial, string path, nodo *sig = NULL)
     {
        valor = id; // ID DE LA PARTICION MONTADA
        siguiente = sig;
        partition_name = disk_name;
+       start = initial;
+       path_disk = path;
     }
 
-   private:
+   //private:
     string valor;
     string partition_name;
+    string path_disk;
     nodo *siguiente;
+    int start;
 
    friend class lista;
 };
@@ -33,7 +37,7 @@ class lista {
     lista() { primero = actual = NULL; }
     ~lista();
 
-    void Insertar(string v, string name);
+    void Insertar(string v, string name, int start);
     void Borrar(string v);
     bool ListaVacia() { return primero == NULL; }
     void Mostrar();
@@ -42,6 +46,7 @@ class lista {
     void Ultimo() { Primero(); if(!ListaVacia()) while(actual->siguiente) Siguiente(); }
     bool Actual() { return actual != NULL; }
     bool isMount(string partition_name);
+    pnodo getElement(string v);
     string ValorActual() { return actual->valor; }
     string getId(string myDisk);
         

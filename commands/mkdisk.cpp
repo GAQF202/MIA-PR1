@@ -1,6 +1,8 @@
 #include "../abstract/command.h"
 #include "../allStructs/structs.h"
+#include "../allStructs/globals.h"
 #include <cstring> 
+#include <ctime>
 
 mkdiskCmd::mkdiskCmd(){
     this->size = -1; //SE INICIALIZA COMO -1 PARA PODER MARCAR SI HAY ERROR
@@ -19,7 +21,6 @@ void mkdiskCmd::assignParameters(parameter* directives[100], int size){
             }else if(strcmp(directives[i]->name,(char*)"-path") == 0){
                 this->path = directives[i]->stringValue;
             }
-
         }
     }
 }
@@ -83,6 +84,9 @@ void mkdiskCmd::execute(){
             //ASIGNACION DE ATRIBUTOS DEL MBR
             strcpy(mbr_disk.fit,this->f.c_str());
             mbr_disk.size = this->size*multiplicator*1024;
+            mbr_disk.signature = rand() % 10;
+            string current_date = get_now();
+            strcpy(mbr_disk.date, current_date.c_str());
 
 
             fseek(disk_file,0,SEEK_SET);

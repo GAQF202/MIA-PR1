@@ -27,6 +27,13 @@ string toMayus(string cadena) {
     return res;
 }
 
+//FUNCION PARA CONVERTIR STRINGS A MINUSCULAS
+string toMinus(string cadena) {
+    string res = cadena;
+    for (int i = 0; i < res.length(); i++) res[i] = tolower(res[i]);
+    return res;
+}
+
 /*INICIA COMMAND*/
 command::command(){}   
 void command::execute(){}

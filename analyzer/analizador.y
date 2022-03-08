@@ -46,6 +46,10 @@
 %token<TEXT> fdisk;
 %token<TEXT> mount;
 %token<TEXT> unmount;
+%token<TEXT> mkfs;
+%token<TEXT> login;
+%token<TEXT> exec;
+%token<TEXT> rep;
 
 // PARAMETERS
 %token<TEXT> size;
@@ -57,6 +61,8 @@
 %token<TEXT> name;
 %token<TEXT> add;
 %token<TEXT> id;
+%token<TEXT> fs;
+%token<TEXT> ruta;
 
 // TYPES
 %token<TEXT> number; // "int"
@@ -78,10 +84,13 @@
 %type<parametro> UNIT;
 %type<parametro> PATH;
 %type<parametro> TYPE;
+%type<parametro> TYPEFORMAT;
 %type<parametro> DELETEP;
 %type<parametro> NAME;
 %type<parametro> ADD;
 %type<parametro> ID;
+%type<parametro> FS;
+%type<parametro> RUTA;
 
 //COMMANDS
 %type<queueT> MKDISKPAR;
@@ -89,6 +98,9 @@
 %type<queueT> FDISKPAR;
 %type<queueT> MOUNTPAR;
 %type<queueT> UNMOUNTPAR;
+%type<queueT> MKFSPAR;
+%type<queueT> EXECPAR;
+%type<queueT> REPPAR;
 %type<TEXT> DIRECTORY;
 
 %start START
@@ -122,6 +134,18 @@ START : START mkdisk MKDISKPAR
       {
         unmountCmd *c = new unmountCmd(); c->assignParameters($3->cola,$3->size);c->execute();
       }
+      | START mkfs MKFSPAR
+      {
+        mkfsCmd *c = new mkfsCmd(); c->assignParameters($3->cola,$3->size);c->execute();
+      }
+      | START exec EXECPAR
+      {
+        execCmd *c = new execCmd(); c->assignParameters($3->cola,$3->size);c->execute();
+      }
+      | START rep REPPAR
+      {
+        //mkfsCmd *c = new mkfsCmd(); c->assignParameters($3->cola,$3->size);c->execute();
+      }
       | fdisk FDISKPAR
       {
         fdiskCmd *c = new fdiskCmd();
@@ -151,6 +175,21 @@ START : START mkdisk MKDISKPAR
         //ASIGNACION DE PARAMETROS
         unmountCmd *c = new unmountCmd();c->assignParameters($2->cola,$2->size);c->execute();
       }
+      | mkfs MKFSPAR
+      {
+        //ASIGNACION DE PARAMETROS
+        mkfsCmd *c = new mkfsCmd(); c->assignParameters($2->cola,$2->size);c->execute();
+      }
+      | exec EXECPAR
+      {
+        //ASIGNACION DE PARAMETROS
+        execCmd *c = new execCmd(); c->assignParameters($2->cola,$2->size);c->execute();
+      }
+      | rep REPPAR
+      {
+        //ASIGNACION DE PARAMETROS
+        //mkfsCmd *c = new mkfsCmd(); c->assignParameters($2->cola,$2->size);c->execute();
+      }
 
 FDISKPAR : FDISKPAR SIZE {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
          | FDISKPAR UNIT {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
@@ -174,8 +213,27 @@ MOUNTPAR : MOUNTPAR PATH {queue *res = new queue();$1->push($2);res->append($1);
          | NAME {queue *res = new queue();res->push($1);$$ = res;}
          | PATH {queue *res = new queue();res->push($1);$$ = res;}
 
-UNMOUNTPAR :  UNMOUNTPAR ID {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+MKFSPAR : MKFSPAR ID {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | MKFSPAR TYPEFORMAT {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | MKFSPAR FS {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | FS {queue *res = new queue();res->push($1);$$ = res;}
+         | TYPEFORMAT {queue *res = new queue();res->push($1);$$ = res;}
+         | ID {queue *res = new queue();res->push($1);$$ = res;}
+
+UNMOUNTPAR : UNMOUNTPAR ID {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
            | ID {queue *res = new queue();res->push($1);$$ = res;}
+
+REPPAR  :  REPPAR PATH {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | REPPAR NAME {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | REPPAR ID {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | REPPAR RUTA {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | RUTA {queue *res = new queue();res->push($1);$$ = res;}
+         | NAME {queue *res = new queue();res->push($1);$$ = res;}
+         | PATH {queue *res = new queue();res->push($1);$$ = res;}
+         | ID {queue *res = new queue();res->push($1);$$ = res;}
+
+EXECPAR  : EXECPAR PATH {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | PATH {queue *res = new queue();res->push($1);$$ = res;}
 
 RMDISKPAR : PATH
           {
@@ -259,6 +317,12 @@ PATH : path equals DIRECTORY
         strcpy( $3, "" );
     }
 
+RUTA : ruta equals DIRECTORY
+    {   
+        $$ = make_parameter($1,$3,0);
+        strcpy( $3, "" );
+    }
+
 DIRECTORY : DIRECTORY slash CADENA
           {
             char res[100];
@@ -278,6 +342,11 @@ DIRECTORY : DIRECTORY slash CADENA
           }
 
 TYPE : type equals caracter 
+     {  
+        $$ = make_parameter($1,$3,0); 
+     } 
+
+TYPEFORMAT : type equals CADENA 
      {  
         $$ = make_parameter($1,$3,0); 
      } 
@@ -303,11 +372,16 @@ ID : id equals identificador
         $$ = make_parameter($1,$3,0); 
      } 
 
+FS : fs equals identificador 
+     {  
+        $$ = make_parameter($1,$3,0); 
+     } 
+
 %%
 
 
-void ver(const char* a){
-    yy_switch_to_buffer(yy_scan_string(a));
+void ver(string a){
+    YY_BUFFER_STATE buffer = yy_scan_string(a.c_str());
     yyparse();
 }
 

@@ -27,10 +27,11 @@ void mountCmd::assignParameters(parameter* directives[100], int size){
 
 void mountCmd::execute(){
 
-    FILE *file = fopen(this->path.c_str(),"r");
+    FILE *file = fopen(this->path.c_str(),"rb+");
     // VERIFICA QUE EL DISCO SI EXISTA EN LA RUTA ESPECIFICADA
     if(!file){
         cout << "Error el disco indicado no existe en la ruta:" << this->path << endl;
+        fclose(file);
         return;
     }
 
@@ -66,10 +67,13 @@ void mountCmd::execute(){
 
     // VERIFICA QUE LA PARTICION INDICADA SEA DE TIPO LOGICA
     if(flag_partition){
-        string disk_name = this->path.substr(this->path.find_last_of("/\\")+1,this->path.length());
+        //string disk_name = this->path.substr(this->path.find_last_of("/\\")+1,this->path.length());
         // MONTO LA PARTICION EN RAM EN LA LISTA GLOBAL
         if(!global_list.isMount(temp.name)){
-            global_list.Insertar(temp.name,disk_name);
+            global_list.Insertar(temp.name,this->path,temp.start);
+            temp.status = '1';
+            fseek(file,temp.start,SEEK_SET);
+            fwrite(&temp,sizeof(Partition),1,file);
         }else{
             cout << "Aviso: la partición "<< temp.name <<" ya está montada en RAM" << endl;
         }

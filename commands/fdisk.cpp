@@ -324,6 +324,7 @@ void fdiskCmd::execute(){
                             // QUIERE DECIR QUE NO CABE EN EL DISCO Y SE LANZA UN ERROR
                             if(selectSpace == -1){
                                 cout << "La particion " << this->name << " no cabe en el disco indicado" << endl;
+                                fclose(file);
                                 return;
                             }
                             initialStart = selectSpace;
@@ -341,6 +342,7 @@ void fdiskCmd::execute(){
                         strcpy(logical.name,this->name.c_str());
                         logical.type = this->type[0];
                         logical.next = -1;
+                        logical.status = '0';
                         mbr.partitions[extended_index] = extended;
 
                         // SOBRESCRIBE EL MBR

@@ -18,6 +18,7 @@ struct parameter
 
 parameter* make_parameter(char* name, char* valueS, int valueI);
 string toMayus(string cadena);
+string toMinus(string cadena);
 
 string make_absolute(string path);
 
@@ -93,6 +94,44 @@ class unmountCmd : public command{
         
         //PARAMETROS
         string id;
+};
+
+// MKFS
+class mkfsCmd : public command{
+    public:
+        mkfsCmd();
+        void assignParameters(parameter* directives[100], int size);
+        void execute();
+        
+        //PARAMETROS
+        string id;
+        string type;
+        string fs;
+};
+
+// EXEC
+class execCmd : public command{
+    public:
+        execCmd();
+        void assignParameters(parameter* directives[100], int size);
+        void execute();
+        
+        //PARAMETROS
+        string path;
+};
+
+// EXEC
+class repCmd : public command{
+    public:
+        repCmd();
+        void assignParameters(parameter* directives[100], int size);
+        void execute();
+        
+        //PARAMETROS
+        string path;
+        string name;
+        string id;
+        string ruta;
 };
 
 #endif
