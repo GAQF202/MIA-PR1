@@ -110,12 +110,13 @@ struct ArchiveBlock
 // BITACORA DE COMANDOS
 struct Journaling
 {
-    char tipo_operacion[10] = "";
-    //char tipo = '-1';
-    char path[40] = "";
-    char contenido[100] = ""; // Validar cuando espacio necesitan.
-    char log_fecha[20] = "";
-    int size = 0;
+    char operation[10];
+    char content[200];
+    int permissions;
+    char name[200];
+    char owner[10];
+    char date[17];
+    char type;
 };
 
 

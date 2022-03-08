@@ -144,7 +144,7 @@ START : START mkdisk MKDISKPAR
       }
       | START rep REPPAR
       {
-        //mkfsCmd *c = new mkfsCmd(); c->assignParameters($3->cola,$3->size);c->execute();
+        repCmd *c = new repCmd(); c->assignParameters($3->cola,$3->size);c->execute();
       }
       | fdisk FDISKPAR
       {
@@ -188,7 +188,7 @@ START : START mkdisk MKDISKPAR
       | rep REPPAR
       {
         //ASIGNACION DE PARAMETROS
-        //mkfsCmd *c = new mkfsCmd(); c->assignParameters($2->cola,$2->size);c->execute();
+        repCmd *c = new repCmd(); c->assignParameters($2->cola,$2->size);c->execute();
       }
 
 FDISKPAR : FDISKPAR SIZE {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}

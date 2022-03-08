@@ -1612,7 +1612,7 @@ yyreduce:
   case 9:
 #line 146 "analizador.y"
       {
-        //mkfsCmd *c = new mkfsCmd(); c->assignParameters($3->cola,$3->size);c->execute();
+        repCmd *c = new repCmd(); c->assignParameters((yyvsp[0].queueT)->cola,(yyvsp[0].queueT)->size);c->execute();
       }
 #line 1618 "parser.cpp"
     break;
@@ -1688,7 +1688,7 @@ yyreduce:
 #line 189 "analizador.y"
       {
         //ASIGNACION DE PARAMETROS
-        //mkfsCmd *c = new mkfsCmd(); c->assignParameters($2->cola,$2->size);c->execute();
+        repCmd *c = new repCmd(); c->assignParameters((yyvsp[0].queueT)->cola,(yyvsp[0].queueT)->size);c->execute();
       }
 #line 1694 "parser.cpp"
     break;

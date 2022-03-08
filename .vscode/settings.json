@@ -46,6 +46,8 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "queue": "cpp",
-        "list": "cpp"
+        "list": "cpp",
+        "cstring": "cpp",
+        "ctime": "cpp"
     }
 }

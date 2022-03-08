@@ -51,8 +51,10 @@ void mkfsCmd::execute(){
                     fwrite(&blank_space,sizeof(blank_space),1,file);
                 }
             }
-            int n = ((real_partition.size -sizeof(SuperBloque)) / 
+
+            int n = (((real_partition.size-sizeof(Partition)) -sizeof(SuperBloque)) / 
                     (4 + sizeof(Journaling) + sizeof(InodeTable) + 3 * sizeof(FileBlock)));
+
             SuperBloque super_bloque; // STRUCT PARA EL SUPERBLOQUE
             int file_system_type = (int)(this->fs.at(0) - '0');
 
@@ -67,8 +69,8 @@ void mkfsCmd::execute(){
             super_bloque.free_blocks_count = (3 * n) - 2;
             super_bloque.inode_size = sizeof(InodeTable);
             super_bloque.block_size = sizeof(FileBlock);
-            super_bloque.bm_inode_start = real_partition.start + real_partition.size +sizeof(super_bloque) + 
-            (file_system_type == 3 ? 100 * sizeof(Journaling) : 0);
+            super_bloque.bm_inode_start = (real_partition.start + sizeof(Partition)) + sizeof(SuperBloque) + 
+            (file_system_type == 3 ? /*100*/ n * sizeof(Journaling) : 0);
             super_bloque.filesystem_type = file_system_type;
             super_bloque.bm_block_start = super_bloque.bm_inode_start + n;
             super_bloque.inode_start = super_bloque.bm_block_start + 3 * n;
@@ -78,6 +80,44 @@ void mkfsCmd::execute(){
             string current_date = get_now();
             strcpy(super_bloque.umtime,current_date.c_str());
 
+            // ESCRIBO EL SUPERBLOQUE
+            fseek(file,real_partition.start+sizeof(Partition),SEEK_SET);
+            fwrite(&super_bloque,sizeof(SuperBloque),1,file);
+
+            // CREACION DE BITMAPS
+            // INODOS
+            char bitinodes[n];
+            char bitblocks[ 3 * n ];
+            for(int i=0; i<n; i++){
+                bitinodes[i] = '0';
+            }
+            //ESCRIBO BITMAP INODOS
+            fseek(file,super_bloque.bm_inode_start,SEEK_SET);
+            fwrite(&bitinodes,n,1,file);
+            for(int i=0; i<3*n; i++){
+                bitblocks[i] = '0';
+            }
+            // ESCRIBO BITMAP BLOQUES
+            fseek(file,super_bloque.bm_block_start,SEEK_SET);
+            fwrite(&bitblocks,3*n,1,file);
+
+            if(file_system_type == 3){
+                Journaling journal_data;
+                journal_data.operation[0] = '-';
+                journal_data.content[0] = '\0';
+                journal_data.permissions = -1;
+                journal_data.owner[0] = '\0';
+                journal_data.name[0] = '\0';
+                journal_data.date[0] = '\0';
+                journal_data.type = '-';
+
+                for(int i = 0; i < n; i++){
+                    fseek(file,((real_partition.start+sizeof(Partition))+(i*sizeof(Journaling))),SEEK_SET);
+                    fwrite(&journal_data, sizeof(Journaling),1,file);
+                }
+            }
+            
+            fclose(file);
 
         }else{
             cout << "Error: la particion con id " << this->id << " no está montada en RAM" << endl;

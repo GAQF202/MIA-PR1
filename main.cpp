@@ -11,7 +11,7 @@ void ver(string path);
 
 int main()
 { 
-       string content;
+       /*string content;
        string command = "";
        std::getline(std::cin,content);
        
@@ -39,15 +39,10 @@ int main()
        }else{
               path = command;
        }
-
-       //string path = "./analyzer/entrada.txt";
-       /*FILE *file = fopen(command.c_str(),"r");
-       parse(file);*/
-
-       ifstream ifs("./analyzer/entrada.txt");
-       string new_entry((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
-       YY_BUFFER_STATE buffer = yy_scan_string(new_entry.c_str());
-       yyparse();
+       cout << path << endl;*/
+       string yea = "/media/gerson/PR1/entrada.txt";
+       FILE *file = fopen(yea.c_str()/*path.c_str()*/,"r");
+       parse(file);  
 
        //exec -path=/media/gerson/PR1/entrada.txt
        return 0;

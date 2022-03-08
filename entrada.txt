@@ -29,6 +29,8 @@ mount -name = yea -path=/media/gerson/discos/disco1.dk
 mount -name = newLogic -path=/media/gerson/discos/disco1.dk
 mount -name = newLogic1 -path=/media/gerson/discos/disco1.dk
 mount -name = newLogic1 -path=/media/gerson/discos/disco1.dk
-unmount -id=571A
+#unmount -id=571A
 
-mkfs -id=571b -type=fast -fs=2fs
+mkfs -id=571A -type=full -fs=3fs
+
+rep -name=Mbr -id=571A -path=/media/gerson/discos/reportes/reporte

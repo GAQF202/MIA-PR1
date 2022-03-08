@@ -337,7 +337,7 @@ void fdiskCmd::execute(){
                         
                         // ASIGNACION DE VALORES A LA PARTICION LOGICA
                         logical.start = initialStart;
-                        logical.size = this->size * multiplicator * 1024; // GUARDO EL TAMANIO
+                        logical.size = (this->size * multiplicator * 1024)+sizeof(Partition); // GUARDO EL TAMANIO
                         strcpy(logical.fit,this->fit.c_str());
                         strcpy(logical.name,this->name.c_str());
                         logical.type = this->type[0];
