@@ -134,4 +134,32 @@ class repCmd : public command{
         string ruta;
 };
 
+// -------------------------- COMANDOS PARA INODOS --------------------------
+
+// MKFILE
+class mkfileCmd : public command{
+    public:
+        mkfileCmd();
+        void assignParameters(parameter* directives[100], int size);
+        void execute();
+        
+        //PARAMETROS
+        string path;
+        string r;
+        int size;
+        string cont;
+};
+
+// MKDIR
+class mkdirCmd : public command{
+    public:
+        mkdirCmd();
+        void assignParameters(parameter* directives[100], int size);
+        void execute();
+        
+        //PARAMETROS
+        string path;
+        string p;
+};
+
 #endif

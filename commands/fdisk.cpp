@@ -203,6 +203,7 @@ void fdiskCmd::execute(){
                                     }
                                 }
                             }
+                            
                             mbr.partitions[index_partition] = partition_found;
                             // REESCRIBO EL MBR
                             fseek(file,0,SEEK_SET);
@@ -446,15 +447,4 @@ void fdiskCmd::execute(){
     }else{
         cout << "Error: el parametro -path es obligatorio en el comando fdisk" << endl;
     }
-
-
-
-    /*cout << this->size << endl;
-    cout << this->path << endl;
-    cout << this->unit << endl;
-    cout << this->type << endl;
-    cout << this->fit << endl;
-    cout << this->deleted << endl;
-    cout << this->name << endl;
-    cout << this->add << endl;*/
 }

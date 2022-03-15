@@ -1,0 +1,29 @@
+body{
+    background-image: linear-gradient(265deg, #ffff5a 0, #f1ff5c 16.67%, #d6ff5e 33.33%, #bafc60 50%, #9fef62 66.67%, #86e465 83.33%, #6dd968 100%);
+}
+
+table{
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left; 
+    align-items: center;
+    border: solid 3px rgb(44, 46, 45);
+}
+
+th, td{
+    padding: 3px;
+}
+
+table .mbr-th{
+    background-color: rgb(56, 58, 56);
+    color: rgb(223, 230, 228);
+}
+
+table .primary-th{
+    background-color: rgb(107, 202, 111);
+}
+
+table .logic-th{
+    background-color: rgb(0, 195, 10);
+}

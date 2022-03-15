@@ -1,24 +1,29 @@
 #include "../estructures/simpleList.h"
 #include <ctime>
+#include <vector>
+#include <string>
+#include <sstream>
 
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-struct global__courrent_user
+struct global_courrent_user
 {
     int logged;
-    char uid[3];
-    char user_name[16];
-    char pwd[16];
-    char grp[16];
-    char id[4];
-    char gid[3];   
+    string uid;
+    string user_name;
+    string pwd;
+    string grp;
+    string id_partition;
+    string gid;   
 };
 
 extern lista global_list; /* variable global */
-extern global__courrent_user global_user; // USUARIO ACTUAL LOGEADO
+extern global_courrent_user global_user; // USUARIO ACTUAL LOGEADO
 
 string get_now();
 string format_day_prop(int field);
+
+vector<string> split(const string &s, char del);
 
 #endif

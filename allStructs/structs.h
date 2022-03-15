@@ -17,6 +17,20 @@ struct Partition
     int next;
 };
 
+// ESTRUCT PARA PARTICION
+
+struct Partiticion
+{
+    char name[16];
+    char status;
+    char type;
+    int start;
+    char fit[2];
+    int size;
+};
+
+// ESTRUCT PARA EBR
+
 struct EBR
 {
     char name[16];
@@ -80,9 +94,9 @@ struct InodeTable
     int uid;
     int gid;
     int size;
-    time_t atime;
-    time_t ctime;
-    time_t mtime;
+    char atime[23];
+    char ctime[23];
+    char mtime[23];
     int block[16];
     char type;
     int perm;

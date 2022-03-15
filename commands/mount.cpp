@@ -10,6 +10,8 @@
 #include <string>
 using namespace std;
 lista global_list;
+global_courrent_user global_user;
+
 mountCmd::mountCmd(){}
 
 void mountCmd::assignParameters(parameter* directives[100], int size){

@@ -46,9 +46,13 @@ BLANK_SPACE [\t\r\f\n" "\"]
 "exec"      { yylval.TEXT = (char*)"exec"; return exec; }
 "rep"       { yylval.TEXT = (char*)"rep"; return rep; }
 
+"mkfile"    { yylval.TEXT = (char*)"mkfile"; return mkfile; }
+"mkdir"     { yylval.TEXT = (char*)"mkdir"; return mkdir; }
+
 "-size"     { yylval.TEXT = (char*)"-size"; return size; }
 "-fit"      { yylval.TEXT = (char*)"-fit"; return adjustment; }
 "-unit"     { yylval.TEXT = (char*)"-unit"; return unit; }
+"-p"        { yylval.TEXT = (char*)"-p"; return p; }
 "-path"     { yylval.TEXT = (char*)"-path"; return path; }
 "-type"     { yylval.TEXT = (char*)"-type"; return type; }
 "-delete"   { yylval.TEXT = (char*)"-delete"; return deleteToken; }
@@ -57,6 +61,8 @@ BLANK_SPACE [\t\r\f\n" "\"]
 "-id"       { yylval.TEXT = (char*)"-id"; return id; }
 "-fs"       { yylval.TEXT = (char*)"-fs"; return fs; }
 "-ruta"     { yylval.TEXT = (char*)"-ruta"; return ruta; }
+"-r"        { yylval.TEXT = (char*)"-r"; return r; }
+"-cont"     { yylval.TEXT = (char*)"-cont"; return cont; }
 
 
 

@@ -38,9 +38,20 @@ void mkfsCmd::execute(){
                 fclose(file);
                 return;
             }
-        
+
+            // LEO LA PARTICION MONTADA EN EL DISCO
             fseek(file,partition_found->start,SEEK_SET);
             fread(&real_partition,sizeof(Partition),1,file);
+
+            //LOGIN
+
+            global_user.logged = 1;
+            global_user.uid = "1";
+            global_user.user_name = "root";
+            global_user.pwd = "123";
+            global_user.grp = "root";
+            global_user.id_partition = partition_found->valor;
+            global_user.gid = "1";
 
             // SI ES FAST BORRO TODO EL ESPACIO DE LA PARTICION CON '\0'
             if(this->type == "FAST"){
@@ -112,11 +123,11 @@ void mkfsCmd::execute(){
                 journal_data.type = '-';
 
                 for(int i = 0; i < n; i++){
-                    fseek(file,((real_partition.start+sizeof(Partition))+(i*sizeof(Journaling))),SEEK_SET);
+                    fseek(file,((real_partition.start+sizeof(Partition)+sizeof(SuperBloque))+(i*sizeof(Journaling))),SEEK_SET);
                     fwrite(&journal_data, sizeof(Journaling),1,file);
                 }
             }
-            
+
             fclose(file);
 
         }else{

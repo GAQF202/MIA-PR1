@@ -34,3 +34,11 @@ mount -name = newLogic1 -path=/media/gerson/discos/disco1.dk
 mkfs -id=571A -type=full -fs=3fs
 
 rep -name=Mbr -id=571A -path=/media/gerson/discos/reportes/reporte
+
+#mkfile -path = "/hola.txt" -size=15 -r
+
+mkdir -path = "/" -p
+mkdir -path = "/hola/gg" -p
+mkdir -path = "/yea" -p
+mkdir -path = "/hola/aja/siu" -p
+mkdir -path = "/hola/maincra" -p

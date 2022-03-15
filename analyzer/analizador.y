@@ -50,6 +50,8 @@
 %token<TEXT> login;
 %token<TEXT> exec;
 %token<TEXT> rep;
+%token<TEXT> mkfile;
+%token<TEXT> mkdir;
 
 // PARAMETERS
 %token<TEXT> size;
@@ -63,6 +65,9 @@
 %token<TEXT> id;
 %token<TEXT> fs;
 %token<TEXT> ruta;
+%token<TEXT> r;
+%token<TEXT> cont;
+%token<TEXT> p;
 
 // TYPES
 %token<TEXT> number; // "int"
@@ -91,6 +96,9 @@
 %type<parametro> ID;
 %type<parametro> FS;
 %type<parametro> RUTA;
+%type<parametro> R;
+%type<parametro> CONT;
+%type<parametro> P;
 
 //COMMANDS
 %type<queueT> MKDISKPAR;
@@ -101,6 +109,8 @@
 %type<queueT> MKFSPAR;
 %type<queueT> EXECPAR;
 %type<queueT> REPPAR;
+%type<queueT> MKFILEPAR;
+%type<queueT> MKDIRPAR;
 %type<TEXT> DIRECTORY;
 
 %start START
@@ -145,6 +155,22 @@ START : START mkdisk MKDISKPAR
       | START rep REPPAR
       {
         repCmd *c = new repCmd(); c->assignParameters($3->cola,$3->size);c->execute();
+      }
+      | START mkfile MKFILEPAR
+      {
+        mkfileCmd *c = new mkfileCmd(); c->assignParameters($3->cola,$3->size);c->execute();
+      }
+      | START mkdir MKDIRPAR
+      {
+        mkdirCmd *c = new mkdirCmd(); c->assignParameters($3->cola,$3->size);c->execute();
+      }
+      | mkdir MKDIRPAR
+      {
+        mkdirCmd *c = new mkdirCmd(); c->assignParameters($2->cola,$2->size);c->execute();
+      }
+      | mkfile MKFILEPAR
+      {
+        mkfileCmd *c = new mkfileCmd(); c->assignParameters($2->cola,$2->size);c->execute();
       }
       | fdisk FDISKPAR
       {
@@ -219,6 +245,20 @@ MKFSPAR : MKFSPAR ID {queue *res = new queue();$1->push($2);res->append($1);$$ =
          | FS {queue *res = new queue();res->push($1);$$ = res;}
          | TYPEFORMAT {queue *res = new queue();res->push($1);$$ = res;}
          | ID {queue *res = new queue();res->push($1);$$ = res;}
+
+MKFILEPAR: MKFILEPAR PATH {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | MKFILEPAR R {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | MKFILEPAR SIZE {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | MKFILEPAR CONT {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | CONT {queue *res = new queue();res->push($1);$$ = res;}
+         | R {queue *res = new queue();res->push($1);$$ = res;}
+         | SIZE {queue *res = new queue();res->push($1);$$ = res;}
+         | PATH {queue *res = new queue();res->push($1);$$ = res;}
+  
+MKDIRPAR : MKDIRPAR PATH {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | MKDIRPAR P {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | P {queue *res = new queue();res->push($1);$$ = res;}
+         | PATH {queue *res = new queue();res->push($1);$$ = res;}
 
 UNMOUNTPAR : UNMOUNTPAR ID {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
            | ID {queue *res = new queue();res->push($1);$$ = res;}
@@ -295,6 +335,8 @@ MKDISKPAR : MKDISKPAR PATH
             $$ = res;
           }
 
+P : p{  $$ = make_parameter($1,$1,0); }
+
 ADJUSTMENT : adjustment equals CADENA 
            {
             $$ = make_parameter($1,$3,0);
@@ -340,6 +382,13 @@ DIRECTORY : DIRECTORY slash CADENA
             $$ = res;
             //strcpy( res, "" ); //POSIBLE CAMBIOOO
           }
+          | slash
+          {
+            char res[100];
+            strcat(res,$1);
+            $$ = res;
+            //strcpy( res, "" ); //POSIBLE CAMBIOOO
+          }
 
 TYPE : type equals caracter 
      {  
@@ -376,6 +425,14 @@ FS : fs equals identificador
      {  
         $$ = make_parameter($1,$3,0); 
      } 
+
+R : r{  $$ = make_parameter($1,$1,0); } 
+
+CONT : cont equals DIRECTORY
+    {   
+        $$ = make_parameter($1,$3,0);
+        strcpy( $3, "" );
+    }
 
 %%
 
