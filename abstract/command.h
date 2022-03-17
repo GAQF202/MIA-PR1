@@ -148,6 +148,7 @@ class mkfileCmd : public command{
         string r;
         int size;
         string cont;
+        string anyText;
 };
 
 // MKDIR

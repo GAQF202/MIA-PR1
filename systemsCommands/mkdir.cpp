@@ -154,6 +154,7 @@ void mkdirCmd::execute(){
                                     fseek(file,superbloque.inode_start + (file_block.content[blockIndex].inodo*sizeof(InodeTable)),SEEK_SET);
                                     fread(&temp_inode,sizeof(InodeTable),1,file);
                                     exist_route = true;
+                                    exist_path = true; // POSIBLE CAMBIO
                                 }
                             }
                         }
@@ -163,7 +164,7 @@ void mkdirCmd::execute(){
                     exist_route = false;
                 }
             }
-            //cout << superbloque.first_block << endl;
+            //cout << exist_route << " " << this->path << endl;
             if(!exist_route){
                 /*cout << "----------------" << endl;
                 for(int i=0; i<remaining_routes.size(); i++){
@@ -373,7 +374,7 @@ void mkdirCmd::execute(){
                         }
                     }*/
 
-                   for(int i=0; i<sizeof(bitblocks); i++){
+                   /*for(int i=0; i<sizeof(bitblocks); i++){
                         
                         FileBlock temp_block;
                         fseek(file,superbloque.block_start + i*sizeof(FileBlock),SEEK_SET);
@@ -384,7 +385,7 @@ void mkdirCmd::execute(){
                                 cout << temp_block.content[j].name << " " << temp_block.content[j].inodo << " ruta:" << this->path << " " << i << endl;
                             }
                         }
-                    }
+                    }*/
 
                     fclose(file);
                 }else{

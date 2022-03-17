@@ -39,6 +39,10 @@ rep -name=Mbr -id=571A -path=/media/gerson/discos/reportes/reporte
 
 mkdir -path = "/" -p
 mkdir -path = "/hola/gg" -p
+#mkdir -path = "/hola/gg" -p
 mkdir -path = "/yea" -p
-mkdir -path = "/hola/aja/siu" -p
+#mkdir -path = "/hola/aja/siu" -p
 mkdir -path = "/hola/maincra" -p
+
+
+mkfile -path = "/hola/gg/elBicho.txt" -r -size=64 -cont=/media/gerson/PR1/holi.txt

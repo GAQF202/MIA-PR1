@@ -158,11 +158,35 @@ void fdiskCmd::execute(){
                         return;
                     }
 
+                    // SE BUSCAN LAS PARTICIONES ACTIVAS Y  SI HAY EXTENDIDA
+                    for(int i=0; i< 4; i++){
+                        
+                        if(mbr.partitions[i].start != -1){
+                            total_partitions += 1;
+                        }
+                        if(mbr.partitions[i].type == 'E'){
+                            extended_index = i;
+                            extended_partition = 1;
+                        }
+                        if(mbr.partitions[i].name == this->name){
+                            cout << "ya existe la paricion con el nombre "<< this->name <<" en el disco " << endl;
+                            return;
+                        }
+                    }
+
                     // SI EXISTE UN "ADD"
                     if(this->add != 0){
                         int ver=0;
                         if(this->type == "L"){
+                            Partition extended; // STRUCT PARTICION EXTENDIDA ENCONTRADA
+                            Partition logical; // STRUCT PARTICION LOGICA A ESCRIBIR
+                            int initialStart; // GUARDA EL ESPACIO INICIAL DE ESCRITURA
+                            //GUARDO LA PARTICION EXTENDIDA
+                            extended = mbr.partitions[extended_index];
                             cout << "Modificar tamanio de logica" << endl;
+                            
+                            fseek(file,extended.next,SEEK_SET);
+                            fread(&logical,sizeof(Partition),1,file);
                         }else{
                             Partition partition_found; // GUARDA LA PARTICION ENCONTRADA
                             int index_partition = -1; // BANDERA QUE INDICA SI EXISTE LA PARTICION
@@ -218,27 +242,12 @@ void fdiskCmd::execute(){
                         fseek(file,ver,SEEK_SET);
                         fread(&hola,sizeof(Partition),1,file);
                         cout << hola.fit << endl;*/
-                    return;
-                    }
-
-                    // SE BUSCAN LAS PARTICIONES ACTIVAS Y  SI HAY EXTENDIDA
-                    for(int i=0; i< 4; i++){
-                        
-                        if(mbr.partitions[i].start != -1){
-                            total_partitions += 1;
-                        }
-                        if(mbr.partitions[i].type == 'E'){
-                            extended_index = i;
-                            extended_partition = 1;
-                        }
-                        if(mbr.partitions[i].name == this->name){
-                            cout << "ya existe la paricion con el nombre "<< this->name <<" en el disco " << endl;
-                            return;
-                        }
+                        return;
                     }
 
                     if(total_partitions == 4){
                         cout << "Error se alcanzó el numero máximo de particiones primarias y extendidas en el discos" << endl;
+                        return;
                     }
 
                     // SI SE QUIERE CREAR UNA EXTENDIDA Y YA HAY UNA ERROR
