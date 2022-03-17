@@ -17,11 +17,12 @@ fdisk -size=1 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -nam
 
 fdisk -size=1 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = "newLogic1"
 
-fdisk -size=1 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = newLogic3
-
 fdisk -size=5 -path=/media/gerson/discos/disco1.dk  -type=p -fit=bf -unit=k -name = "maincra" #-add=54646
 
-fdisk -path=/media/gerson/discos/disco1.dk  -type=p -unit=k -name = "maincra" -add=-3
+fdisk -size=1 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = newLogic3
+
+#fdisk -path=/media/gerson/discos/disco1.dk  -type=p -unit=k -name = "maincra" -add=-3
+fdisk -path=/media/gerson/discos/disco1.dk  -type=l -unit=k -name = "newLogic3" -add=3
 
 fdisk -name = maincra -delete=full -path=/media/gerson/discos/disco1.dk
 
@@ -39,10 +40,11 @@ rep -name=Mbr -id=571A -path=/media/gerson/discos/reportes/reporte
 
 mkdir -path = "/" -p
 mkdir -path = "/hola/gg" -p
-#mkdir -path = "/hola/gg" -p
 mkdir -path = "/yea" -p
-#mkdir -path = "/hola/aja/siu" -p
-mkdir -path = "/hola/maincra" -p
+mkdir -path = "/hola/aja" -p
 
 
 mkfile -path = "/hola/gg/elBicho.txt" -r -size=64 -cont=/media/gerson/PR1/holi.txt
+
+
+#mkfile -path = "/hola/gg/Hola/elBicho.txt" -r -size=64 -cont=/media/gerson/PR1/holi.txt

@@ -41,6 +41,7 @@ void mkdirCmd::execute(){
         vector<string> routes = split(this->path,'/');
         int number_routes = routes.size();
         routes.at(0) = "/";
+        
         // NOMBRE DEL ARCHIVO
         string file_name = routes.at(routes.size() - 1).c_str();
 
@@ -141,6 +142,7 @@ void mkdirCmd::execute(){
                         // RECORRE LOS PUNTEROS DE LOS BLOQUES
                         for(int blockIndex=0; blockIndex < 4; blockIndex++){
                             if(file_block.content[blockIndex].inodo != -1){
+                                //cout << file_block.content[blockIndex].name << endl;
                                 if(file_block.content[blockIndex].name == routes[path_index]){
                                     // ELIMINO LAS RUTAS QUE YA ESTAN CREADAS PARA QUE QUEDEN SOLO LAS RESTANTES
                                     auto elem_to_remove = remaining_routes.begin();
@@ -302,6 +304,8 @@ void mkdirCmd::execute(){
                                         break;
                                     }
                                 }
+
+                                //cout << this->path << " " << free_inode << endl;
                                 // CREO EL INODO
                                 InodeTable newInode;
                                 newInode.uid = (int)stoi(global_user.uid);
@@ -326,6 +330,8 @@ void mkdirCmd::execute(){
                                 strcpy(actual_block.content[indice_encontrado].name,remaining_routes[route_index].c_str());
 
                                 // ESCRIBO EL INODO
+                                //cout << this->path << free_inode << endl;
+                                //cout << this->path << temp_inode.block[pointer] << pointer << endl;
                                 fseek(file,superbloque.inode_start + free_inode * sizeof(InodeTable),SEEK_SET);
                                 fwrite(&newInode,sizeof(InodeTable),1,file);
                                 // ESCRIBO EL BLOQUE
@@ -387,6 +393,13 @@ void mkdirCmd::execute(){
                         }
                     }*/
 
+                    InodeTable ver;
+
+                    //fseek(file,superbloque.inode_start,SEEK_SET);
+                    //fread(&ver,sizeof(InodeTable),1,file);
+
+                    //cout << ver.block[0] << endl;
+
                     fclose(file);
                 }else{
                     cout << "Error: la ruta no existe, para crearla usa el parámetro -p" << endl;
@@ -395,7 +408,6 @@ void mkdirCmd::execute(){
             }
 
         }
-
     }
 
 }

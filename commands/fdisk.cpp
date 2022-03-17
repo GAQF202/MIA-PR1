@@ -84,6 +84,11 @@ void fdiskCmd::execute(){
         return;
     }
 
+    // SI VIENE VACIO EL TYPE ENTONCES SE CREA UNA PRIMARIA
+    if(this->type == ""){
+        this->type = 'P';
+    }
+
     if(this->path.length() != 0){
         if(this->size != -1 || this->add != 0 || this->deleted!=""){
             if(this->name.length() != 0){
@@ -181,12 +186,57 @@ void fdiskCmd::execute(){
                             Partition extended; // STRUCT PARTICION EXTENDIDA ENCONTRADA
                             Partition logical; // STRUCT PARTICION LOGICA A ESCRIBIR
                             int initialStart; // GUARDA EL ESPACIO INICIAL DE ESCRITURA
+                            int void_space = 0;
                             //GUARDO LA PARTICION EXTENDIDA
                             extended = mbr.partitions[extended_index];
-                            cout << "Modificar tamanio de logica" << endl;
                             
                             fseek(file,extended.next,SEEK_SET);
                             fread(&logical,sizeof(Partition),1,file);
+
+                            while(logical.next != -1){
+                                // SI ENCUENTRA LA PARTICION DETIENE LA BUSQUEDA
+                                if(logical.name == this->name){
+                                    break;
+                                }
+                                fseek(file,logical.next,SEEK_SET);
+                                fread(&logical,sizeof(Partition),1,file);
+                            }
+
+                            // SI ES LA PARTICION FINAL
+                            if(logical.next == -1){
+                                void_space = (extended.start + extended.size) - (logical.start + logical.size);
+                            }else{
+                                Partiticion nextEbr;
+                                fseek(file,logical.next,SEEK_SET);
+                                fread(&nextEbr,sizeof(Partition),1,file);
+                                void_space = nextEbr.start - (logical.start + logical.size);
+                            }
+
+                            // VALIDO QUE LOS ESPACIOS SEAN CORRECTOS
+                            if(this->add >= 0){
+                                if(void_space >= this->add*multiplicator*1024){
+                                    logical.size += this->add*multiplicator*1024;
+                                }else{
+                                    cout << "Error: no se puede agregar espacio a la partición " << this->name << endl;
+                                    return;
+                                }
+                            }else{
+                                if((logical.size + this->add*multiplicator*1024) >= 0){
+                                    logical.size += this->add*multiplicator*1024;
+                                }else{
+                                    cout << "Error: no se puede quitar espacio a la partición " << this->name << endl;
+                                    return;
+                                }
+                            }
+
+                            // SOBREESCRIBE EL MBR
+                            fseek(file,0,SEEK_SET);
+                            fwrite(&mbr,sizeof(MBR),1,file);
+                            // SOBREESCRIBO LA PARTICION LOGICA
+                            fseek(file,logical.start,SEEK_SET);
+                            fwrite(&logical,sizeof(Partition),1,file);
+                            fclose(file);
+
                         }else{
                             Partition partition_found; // GUARDA LA PARTICION ENCONTRADA
                             int index_partition = -1; // BANDERA QUE INDICA SI EXISTE LA PARTICION
@@ -312,7 +362,7 @@ void fdiskCmd::execute(){
 
                             // CALCULA EL ESPACIO QUE HAY ENTRE EL FINAL Y EL LA ULTIMA PARTICION EN LA LISTA
                             availableEspaces[index].start = temp.start + temp.size + 1;
-                            availableEspaces[index].size = extended.size - (temp.start+temp.size+1);
+                            availableEspaces[index].size = (extended.start + extended.size) - (temp.start+temp.size+1);
 
                             //ORDENA LOS ESPACIOS VACIOS SEGUN EL FIT
                             bubbleSort(availableEspaces,mbr.fit);
@@ -347,7 +397,7 @@ void fdiskCmd::execute(){
                         
                         // ASIGNACION DE VALORES A LA PARTICION LOGICA
                         logical.start = initialStart;
-                        logical.size = (this->size * multiplicator * 1024)+sizeof(Partition); // GUARDO EL TAMANIO
+                        logical.size = (this->size * multiplicator * 1024);//+sizeof(Partition); // GUARDO EL TAMANIO
                         strcpy(logical.fit,this->fit.c_str());
                         strcpy(logical.name,this->name.c_str());
                         logical.type = this->type[0];

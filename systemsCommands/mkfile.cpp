@@ -76,6 +76,8 @@ void mkfileCmd::execute(){
             // LEO EL PRIMER INODO
             fseek(file,superbloque.inode_start,SEEK_SET);
             fread(&temp_inode,sizeof(InodeTable),1,file);
+
+            //cout << temp_inode.block[0] << superbloque.inode_start << endl;
             
             bool exist_route = false;
             // VECTOR PARRA GUARDAR LAS RUTAS QUE FALTAN POR CREARSE
@@ -118,14 +120,15 @@ void mkfileCmd::execute(){
                 if(!exist_path){
                     exist_route = false;
                 }
-            }
-
+            }   
+            //cout << exist_route << endl;
             if(!exist_route){
-
                 if(this->r != ""){
-
+                    //mkdirCmd *c = new mkdirCmd();
+                    //c->path = 
                 }else{
                     cout << "Error: la ruta del mkfile no existe intenta utilizando el parametro -r" << endl;
+                    return;
                 }
 
             }else{
