@@ -44,7 +44,6 @@ void mkfsCmd::execute(){
             fread(&real_partition,sizeof(Partition),1,file);
 
             //LOGIN
-
             global_user.logged = 1;
             global_user.uid = "1";
             global_user.user_name = "root";
@@ -127,6 +126,21 @@ void mkfsCmd::execute(){
                     fwrite(&journal_data, sizeof(Journaling),1,file);
                 }
             }
+
+            // CREO LA CARPETA RAIZ
+            mkdirCmd *c = new mkdirCmd();
+            c->path = "/";
+            c->p = "-p";
+            c->execute();
+
+            // CREO EL ARCHIVO DE users.txt EN LA RAIZ
+            mkfileCmd *d = new mkfileCmd();
+            d->anyText = "1, G, root \n 1, U, root, root, 1234 \n";
+            d->cont = "";
+            d->path = "/users.txt";
+            d->r = "-r";
+            d->size = 0;
+            d->execute();
 
             fclose(file);
 

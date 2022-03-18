@@ -49,10 +49,23 @@ void mkfileCmd::execute(){
             string parent_path = this->path.substr(0,this->path.find_last_of("/\\"));
 
             string current_date = get_now();// LEO EL SUPERBLOQUE DE LA PARTICION
+            //vector<string> real_route = split(this->path,'/');
+            //cout << real_route.size()<< endl;
             // OBTENGO TODAS LAS CARPETAS PADRES DEL ARCHIVO
             vector<string> routes = split(parent_path,'/');
-            int number_routes = routes.size();
-            routes.at(0) = "/";
+
+            bool saltar_busqueda = false;
+            bool exist_route = false;
+
+            // SI EL TAMANIO DE LAS RUTAS SEPARADAS POR / ES 
+            // CERO QUIERE DECIR QUE EL ARCHIVO SE DEBE CREAR EN LA RAIZ
+            if(routes.size() == 0 && this->path[0]=='/'){
+                //saltar_busqueda = true;
+                exist_route = true;
+            }else{
+                int number_routes = routes.size();
+                routes.at(0) = "/";
+            }
 
             /*for(int i=0; i<routes.size(); i++){
                 cout << routes[i] << endl;
@@ -79,49 +92,56 @@ void mkfileCmd::execute(){
 
             //cout << temp_inode.block[0] << superbloque.inode_start << endl;
             
-            bool exist_route = false;
+            //bool exist_route = false;
             // VECTOR PARRA GUARDAR LAS RUTAS QUE FALTAN POR CREARSE
             vector<string> remaining_routes = routes;
-
+            //if(saltar_busqueda){
             // RECORRE RUTA
-            for(int path_index=0; path_index<routes.size();path_index++){
-                bool exist_path = false;
-                // RECORRE PUNTEROS DEl INODO
-                for(int pointerIndex = 0 ; pointerIndex < 16 ; pointerIndex++){
-                    //cout << temp_inode.block[pointerIndex] << " " << temp_inode.type << endl;
-                    // RECORRO SOLO LOS BLOQUES DE LOS INODOS DE TIPO CARPETA
-                    if(temp_inode.block[pointerIndex] != -1 && temp_inode.type == '0'){
-                        FileBlock file_block;
-                        index_temp_inode = temp_inode.block[pointerIndex]; // GUARDO EL INDICE DEL INDICE TEMP
-                        fseek(file,superbloque.block_start + (temp_inode.block[pointerIndex]*sizeof(FileBlock)),SEEK_SET);
-                        fread(&file_block,sizeof(FileBlock),1,file);
-                        // RECORRE LOS PUNTEROS DE LOS BLOQUES
-                        for(int blockIndex=0; blockIndex < 4; blockIndex++){
-                            if(file_block.content[blockIndex].inodo != -1){
-                                if(file_block.content[blockIndex].name == routes[path_index]){
-                                    // ELIMINO LAS RUTAS QUE YA ESTAN CREADAS PARA QUE QUEDEN SOLO LAS RESTANTES
-                                    auto elem_to_remove = remaining_routes.begin();
-                                    if(remaining_routes.size() == routes.size()){
-                                        remaining_routes.erase(elem_to_remove);
-                                        remaining_routes.erase(elem_to_remove);
-                                    }else{
-                                        remaining_routes.erase(elem_to_remove);
+                for(int path_index=0; path_index<routes.size();path_index++){
+                    bool exist_path = false;
+                    // RECORRE PUNTEROS DEl INODO
+                    for(int pointerIndex = 0 ; pointerIndex < 16 ; pointerIndex++){
+                        //cout << temp_inode.block[pointerIndex] << " " << temp_inode.type << endl;
+                        // RECORRO SOLO LOS BLOQUES DE LOS INODOS DE TIPO CARPETA
+                        if(temp_inode.block[pointerIndex] != -1 && temp_inode.type == '0'){
+                            FileBlock file_block;
+                            index_temp_inode = temp_inode.block[pointerIndex]; // GUARDO EL INDICE DEL INDICE TEMP
+                            fseek(file,superbloque.block_start + (temp_inode.block[pointerIndex]*sizeof(FileBlock)),SEEK_SET);
+                            fread(&file_block,sizeof(FileBlock),1,file);
+                            // RECORRE LOS PUNTEROS DE LOS BLOQUES
+                            for(int blockIndex=0; blockIndex < 4; blockIndex++){
+                                if(file_block.content[blockIndex].inodo != -1){
+                                    if(file_block.content[blockIndex].name == routes[path_index]){
+                                        // ELIMINO LAS RUTAS QUE YA ESTAN CREADAS PARA QUE QUEDEN SOLO LAS RESTANTES
+                                        auto elem_to_remove = remaining_routes.begin();
+                                        if(remaining_routes.size() == routes.size()){
+                                            remaining_routes.erase(elem_to_remove);
+                                            remaining_routes.erase(elem_to_remove);
+                                        }else{
+                                            remaining_routes.erase(elem_to_remove);
+                                        }
+                                        // RECORRO EL ARBOL
+                                        fseek(file,superbloque.inode_start + (file_block.content[blockIndex].inodo*sizeof(InodeTable)),SEEK_SET);
+                                        fread(&temp_inode,sizeof(InodeTable),1,file);
+                                        index_temp_inode = file_block.content[blockIndex].inodo; // GUARDO EL NUEVO INDICE
+                                        exist_route = true;
+                                        exist_path = true; // POSIBLE CAMBIO
                                     }
-                                    // RECORRO EL ARBOL
-                                    fseek(file,superbloque.inode_start + (file_block.content[blockIndex].inodo*sizeof(InodeTable)),SEEK_SET);
-                                    fread(&temp_inode,sizeof(InodeTable),1,file);
-                                    exist_route = true;
-                                    exist_path = true; // POSIBLE CAMBIO
                                 }
                             }
                         }
                     }
-                }
-                if(!exist_path){
-                    exist_route = false;
-                }
-            }   
-            //cout << this->path << exist_route << endl;
+                    if(!exist_path){
+                        exist_route = false;
+                    }
+                }  
+            //} 
+            //cout << "estoooo " << this->path << exist_route << endl;
+            //cout << index_temp_inode << endl;
+            //index_temp_inode = 3;
+            /*for(int i=0; i<sizeof(remaining_routes);i++){
+                cout << remaining_routes[i] << endl;
+            }*/
             // VERIFICACION DE EXISTENCIAS DE RUTAS
             if(!exist_route){
                 // CREA LAS RUTAS FALTANTES
@@ -147,6 +167,7 @@ void mkfileCmd::execute(){
 
             }else{
                 // BUSCO EL PUNTERO LIBRE DEL INODO
+                //cout << temp_inode.block[0] << "  " << index_temp_inode << endl;
                 for(int pointer_index=0; pointer_index<15; pointer_index++){
                     bool has_space = false;
                     int indice_encontrado; //GUARDA EL INDICE DEL BLOQUE QUE ESTE DISPONIBLE
@@ -231,7 +252,6 @@ void mkfileCmd::execute(){
                         // Y GUARDO EL NOMBRE DEL NUEVO DIRECTORIO CREADO
                         real_block.content[block_pointer].inodo = free_inode;
                         strcpy(real_block.content[block_pointer].name,archive_name.c_str());
-
                         
                         // ESCRIBO EL INODO NUEVO
                         fseek(file,superbloque.inode_start + free_inode * sizeof(InodeTable),SEEK_SET);
@@ -342,7 +362,7 @@ void mkfileCmd::execute(){
                 cout << "Error: el parametro size en mkfile no puede ser negativo" << endl;
                 return;
             }
-
+            //cout << index_temp_inode << endl;
             // ESCRIBO EN EL ARCHIVO SEGUN EL TAMANIO INDICADO
             if(this->size >= 0 || content_size >= 0){
                 temp_inode.size = this->size >= content_size ? this->size : content_size;

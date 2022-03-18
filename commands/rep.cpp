@@ -587,7 +587,7 @@ void repCmd::execute(){
                         }
                     }
                 }
-                nodes += "<tr>";nodes += createPortTd("TIPO","");nodes += createPortTd(to_string(temp_inode.type),"");nodes += "</tr>\n";
+                nodes += "<tr>";nodes += createPortTd("TIPO","");aux = "";aux.push_back(temp_inode.type);nodes += createPortTd(aux,"");nodes += "</tr>\n";
                 nodes += "<tr>";nodes += createPortTd("PERMISOS","");nodes += createPortTd(to_string(temp_inode.perm),"");nodes += "</tr>\n";
                 
                 nodes += "</table>>]; \n";
@@ -606,7 +606,7 @@ void repCmd::execute(){
         
         string command = "dot -Tsvg " + this->path + ".dot" + " -o "+ this->path + ".svg";
         system(command.c_str());
-    
+
     }
 
     fclose(file);

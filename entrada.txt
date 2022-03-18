@@ -39,13 +39,19 @@ mkfs -id=571A -type=full -fs=3fs
 
 #mkfile -path = "/hola.txt" -size=15 -r
 
-mkdir -path = "/" -p
+#mkdir -path = "/" -p
 mkdir -path = "/hola/gg" -p
+mkdir -path = "/hola/bea" -p
 mkdir -path = "/yea" -p
-mkdir -path = "/hola/aja" -p
+mkdir -path = "/siuuu" -p
+#mkdir -path = "/hola/aja" -p
 
 
-mkfile -path = "/hola/bea/elBicho.txt" -r -size=64 -cont=/media/gerson/PR1/holi.txt
+mkfile -path = "/elBicho.txt" -r -size=64 -cont=/media/gerson/PR1/holi.txt
+
+mkfile -path = "/hola/bea/asfd/elBicho.txt" -r -size=64 -cont=/media/gerson/PR1/holi.txt
+
+#mkfile -path = "/hola/elBicho.txt" -r -size=64 -cont=/media/gerson/PR1/holi.txt
 
 rep -name=Mbr -id=571A -path=/media/gerson/discos/reportes/reporte
 
@@ -65,4 +71,4 @@ rep -name=sB -id=571A -path=/media/gerson/discos/reportes/sb
 rep -name=Tree -id=571A -path=/media/gerson/discos/reportes/tree
 
 
-Pause
+#Pause

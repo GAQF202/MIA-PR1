@@ -155,6 +155,7 @@ void mkdirCmd::execute(){
                                     // RECORRO EL ARBOL
                                     fseek(file,superbloque.inode_start + (file_block.content[blockIndex].inodo*sizeof(InodeTable)),SEEK_SET);
                                     fread(&temp_inode,sizeof(InodeTable),1,file);
+                                    index_temp_inode = file_block.content[blockIndex].inodo; // POSIBLE CAMBIO
                                     exist_route = true;
                                     exist_path = true; // POSIBLE CAMBIO
                                 }
