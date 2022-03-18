@@ -25,7 +25,7 @@ fdisk -size=5 -path=/media/gerson/discos/disco1.dk  -type=p -fit=bf -unit=k -nam
 fdisk -size=1 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = newLogic3
 
 #fdisk -path=/media/gerson/discos/disco1.dk  -type=p -unit=k -name = "maincra" -add=-3
-#fdisk -path=/media/gerson/discos/disco1.dk  -type=l -unit=k -name = "newLogic3" -add=-1
+fdisk -path=/media/gerson/discos/disco1.dk   -unit=k -name = "newLogic3" -add=1
 
 fdisk -name = maincra -delete=full -path=/media/gerson/discos/disco1.dk
 

@@ -84,11 +84,6 @@ void fdiskCmd::execute(){
         return;
     }
 
-    // SI VIENE VACIO EL TYPE ENTONCES SE CREA UNA PRIMARIA
-    if(this->type == ""){
-        this->type = 'P';
-    }
-
     if(this->path.length() != 0){
         if(this->size != -1 || this->add != 0 || this->deleted!=""){
             if(this->name.length() != 0){
@@ -104,6 +99,29 @@ void fdiskCmd::execute(){
                     int extended_index = -1; // GUARDA EL INDICE DE LA PARTICION EXTENDIDA
                     // VARIABLE PARA SABER TAMANIO REAL DE LA PARTICION
                     int multiplicator = strcmp(this->unit.c_str(),"M")==0 ? 1024 : 1;
+
+                    // SI VIENE VACIO EL TYPE ENTONCES SE CREA UNA PRIMARIA
+                    if(this->type == ""){
+                        // SI VIENE UN DELET O UN ADD QUIERE DECIR QUE HAY QUE BUSCAR EL TIPO
+                        // SI EN DADO CASO NO LO TRAE
+                        if(this->deleted != "" || this->add != 0){    
+                            for(int par=0; par<4; par++){
+                                // BUSCA LAS PARTICIONES DISPONIBLES
+                                if(mbr.partitions[par].size != -1){
+                                    if(mbr.partitions[par].name == this->name){
+                                        this->type = mbr.partitions[par].type;
+                                        break;
+                                    }
+                                }
+                            }
+                            // SI DESPUES DE BUSCAR SIGUE VACIA 
+                            if(this->type == ""){
+                                this->type = 'L';
+                            }
+                        }else{
+                            this->type = 'P';
+                        }
+                    }
 
                     voidEspace tempVoidSpace;
                     tempVoidSpace.start = -1;
