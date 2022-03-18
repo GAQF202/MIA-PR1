@@ -432,6 +432,88 @@ void repCmd::execute(){
         
         string command = "dot -Tpng " + this->path + ".dot" + " -o "+ this->path + ".png";
         system(command.c_str());
+    } else if(this->name == "BM_INODE"){
+        string bm_inodes = "";
+
+        for(int inode=0; inode<sizeof(bitinodes); inode++){
+            bm_inodes += bitinodes[inode];
+            bm_inodes += " ";
+            if(inode == 19){
+                bm_inodes += "\n";
+            }
+        }
+        //cout << bm_inodes << endl;
+        // CREO EL .TXT 
+        ofstream output_file;
+        output_file.open(this->path + ".txt");
+        output_file << bm_inodes << endl;
+        output_file.close();
+
+    }else if(this->name == "BM_BLOCK"){
+        string bm_block = "";
+
+        for(int block=0; block<sizeof(bitblocks); block++){
+            bm_block += bitblocks[block];
+            bm_block += " ";
+            if(block == 19){
+                bm_block += "\n";
+            }
+        }
+
+        // CREO EL .TXT 
+        ofstream output_file;
+        output_file.open(this->path + ".txt");
+        output_file << bm_block << endl;
+        output_file.close();
+    }else if(this->name == "SB"){
+        // BUSCO EL PRIMER INODO LIBRE
+        for(int i=0; i<sizeof(bitinodes); i++){
+            if(bitinodes[i] == '0'){
+                superbloque.first_inode = i;
+                break;
+            }
+        }
+
+        // BUSCO EL PRIMER BLOQUE LIBRE
+        for(int i=0; i<sizeof(bitblocks); i++){
+            if(bitblocks[i] == '0'){
+                superbloque.first_block = i;
+                break;
+            }
+        }
+
+        string html_content = "<html>\n<head><title>"+report_name+"</title> <link rel=\"stylesheet\" type=\"text/css\" href=\"/media/gerson/PR1/styles/style.css\" /> </head>\n<body>\n<table>\n";
+
+        html_content += "<tr>\n";
+        html_content += createTh("REPORTE DE SUPERBLOQUE","mbr-th");
+        html_content += createTh("","mbr-th");
+        html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_filesystem_type");html_content += createTd(to_string(superbloque.filesystem_type));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_inodes_count");html_content += createTd(to_string(superbloque.inodes_count));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_blocks_count");html_content += createTd(to_string(superbloque.blocks_count));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_free_blocks_count");html_content += createTd(to_string(superbloque.free_blocks_count));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_free_inodes_count");html_content += createTd(to_string(superbloque.free_inodes_count));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_mtime");html_content += createTd(string(superbloque.mtime));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_umtime");html_content += createTd(string(superbloque.umtime));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_mnt_count");html_content += createTd(to_string(superbloque.mnt_count));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_magic");html_content += createTd(to_string(superbloque.magic));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_inode_size");html_content += createTd(to_string(superbloque.inode_size));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_block_size");html_content += createTd(to_string(superbloque.block_size));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_first_inode");html_content += createTd(to_string(superbloque.first_inode));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_first_block");html_content += createTd(to_string(superbloque.first_block));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_bm_inode_start");html_content += createTd(to_string(superbloque.bm_inode_start));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_bm_block_start");html_content += createTd(to_string(superbloque.bm_block_start));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_inode_start");html_content += createTd(to_string(superbloque.inode_start));html_content += "\n</tr>";
+        html_content += "<tr>\n";html_content += createTd("sb_block_start");html_content += createTd(to_string(superbloque.block_start));html_content += "\n</tr>";
+
+        html_content += "</table>\n</body>\n</html>\n";
+        //cout << html_content << endl;
+
+        ofstream output_file;
+        output_file.open(this->path + ".html");
+        output_file << html_content << endl;
+        output_file.close();
     }
+
     fclose(file);
 }

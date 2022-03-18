@@ -54,3 +54,9 @@ rep -name=disk -id=571A -path=/media/gerson/discos/reportes/reporte
 rep -name=inode -id=571A -path=/media/gerson/discos/reportes/reporte
 
 rep -name=bloCk -id=571A -path=/media/gerson/discos/reportes/reporte
+
+rep -name=bm_Inode -id=571A -path=/media/gerson/discos/reportes/reporte_inodes
+
+rep -name=bm_BlOck -id=571A -path=/media/gerson/discos/reportes/reporte_blockes
+
+rep -name=sB -id=571A -path=/media/gerson/discos/reportes/sb
