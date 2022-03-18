@@ -121,11 +121,25 @@ void mkfileCmd::execute(){
                     exist_route = false;
                 }
             }   
-            //cout << exist_route << endl;
+            //cout << this->path << exist_route << endl;
+            // VERIFICACION DE EXISTENCIAS DE RUTAS
             if(!exist_route){
+                // CREA LAS RUTAS FALTANTES
                 if(this->r != ""){
-                    //mkdirCmd *c = new mkdirCmd();
-                    //c->path = 
+                    // CREA LAS RUTAS
+                    mkdirCmd *c = new mkdirCmd();
+                    c->path = parent_path;
+                    c->p = "-p";
+                    c->execute();
+                    // VUELVE A EJECUTAR EL mkfile
+                    mkfileCmd *d = new mkfileCmd();
+                    d->anyText = this->anyText;
+                    d->cont = this->cont;
+                    d->path = this->path;
+                    d->r = this->r;
+                    d->size = this->size;
+                    d->execute();
+                    return;
                 }else{
                     cout << "Error: la ruta del mkfile no existe intenta utilizando el parametro -r" << endl;
                     return;
@@ -342,7 +356,7 @@ void mkfileCmd::execute(){
                 }
 
                 //cout << number_blocks << endl;
-
+                //cout << number_blocks << this->path  << endl;
                 for(int block_index=0; block_index<number_blocks; block_index++){
                     int free_block_index;
                     // BUSCO EL BLOQUE LIBRE EN EL BITMAPS DE BLOQUES
@@ -371,6 +385,7 @@ void mkfileCmd::execute(){
                     }
 
                     superbloque.free_blocks_count -= 1;
+                    bitblocks[free_block_index] = '1';
 
                     // REESCRIBO EL SUPERBLOQUE EN LA PARTICION
                     fseek(file,element->start + sizeof(Partition),SEEK_SET);
@@ -378,7 +393,7 @@ void mkfileCmd::execute(){
                     
                     // REESCRIBO EL INODO TEMPORAL QUE ES EL DE ARCHIVO
                     fseek(file,superbloque.inode_start + (index_temp_inode*sizeof(InodeTable)),SEEK_SET);
-                    fwrite(&bloqueArchivo,sizeof(ArchiveBlock),1,file);
+                    fwrite(&temp_inode,sizeof(InodeTable),1,file);
 
                     // ESCRIBO EL BLOQUE DE ARCHIVO EN EL DISCO
                     fseek(file,(superbloque.block_start + (free_block_index*sizeof(ArchiveBlock))),SEEK_SET);
@@ -390,6 +405,16 @@ void mkfileCmd::execute(){
                 }
 
             }
+
+            
+        InodeTable ver;
+        /*for (int i=0; i<sizeof(bitinodes);i++){
+            if(bitinodes[i] != '0'){
+                fseek(file,superbloque.inode_start + i*sizeof(InodeTable), SEEK_SET);
+                fread(&ver,sizeof(InodeTable),1,file);
+                cout << ver.atime << endl;
+            }
+        }*/
 
         fclose(file);
 

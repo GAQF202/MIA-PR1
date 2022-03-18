@@ -165,7 +165,6 @@ void fdiskCmd::execute(){
 
                     // SE BUSCAN LAS PARTICIONES ACTIVAS Y  SI HAY EXTENDIDA
                     for(int i=0; i< 4; i++){
-                        
                         if(mbr.partitions[i].start != -1){
                             total_partitions += 1;
                         }
@@ -221,7 +220,8 @@ void fdiskCmd::execute(){
                                     return;
                                 }
                             }else{
-                                if((logical.size + this->add*multiplicator*1024) >= 0){
+                                int part_size = sizeof(Partition);
+                                if((logical.size + ((this->add*multiplicator*1024)+part_size)) >= 0){
                                     logical.size += this->add*multiplicator*1024;
                                 }else{
                                     cout << "Error: no se puede quitar espacio a la partición " << this->name << endl;
@@ -295,7 +295,7 @@ void fdiskCmd::execute(){
                         return;
                     }
 
-                    if(total_partitions == 4){
+                    if(total_partitions == 5){
                         cout << "Error se alcanzó el numero máximo de particiones primarias y extendidas en el discos" << endl;
                         return;
                     }
@@ -343,7 +343,7 @@ void fdiskCmd::execute(){
                             fread(&temp,sizeof(Partition),1,file);
 
                             availableEspaces[index].start = extended.start + (sizeof(Partition)+1);
-                            availableEspaces[index].size = temp.start - (sizeof(Partition)+2);
+                            availableEspaces[index].size = temp.start - (extended.start + (sizeof(Partition)+2));
                             
                             index++;
                             
@@ -397,7 +397,7 @@ void fdiskCmd::execute(){
                         
                         // ASIGNACION DE VALORES A LA PARTICION LOGICA
                         logical.start = initialStart;
-                        logical.size = (this->size * multiplicator * 1024);//+sizeof(Partition); // GUARDO EL TAMANIO
+                        logical.size = (this->size * multiplicator * 1024)+sizeof(Partition); // GUARDO EL TAMANIO
                         strcpy(logical.fit,this->fit.c_str());
                         strcpy(logical.name,this->name.c_str());
                         logical.type = this->type[0];

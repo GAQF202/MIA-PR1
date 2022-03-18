@@ -7,11 +7,14 @@ mkdisk  -path = "/media/gerson/discos/disco1.dk" -unit=k -fit=wf -size=91
 
 #CREACION DE PARTICIONES
 
-fdisk -size=10 -path=/media/gerson/discos/disco1.dk  -type=e -fit=bf -unit=k -name = "particion1" #-add=54646
 
 fdisk -size=5 -path=/media/gerson/discos/disco1.dk  -type=p -fit=bf -unit=k -name = "particion3" #-add=54646
 
-fdisk -size=6 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = "yea" #-add=54646
+fdisk -size=25 -path=/media/gerson/discos/disco1.dk  -type=e -fit=bf -unit=k -name = "particion1" #-add=54646
+
+fdisk -size=10 -path=/media/gerson/discos/disco1.dk   -fit=bf -unit=k -name = "particion0"
+
+fdisk -size=10 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = "yea"
 
 fdisk -size=1 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = "newLogic"
 
@@ -22,7 +25,7 @@ fdisk -size=5 -path=/media/gerson/discos/disco1.dk  -type=p -fit=bf -unit=k -nam
 fdisk -size=1 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = newLogic3
 
 #fdisk -path=/media/gerson/discos/disco1.dk  -type=p -unit=k -name = "maincra" -add=-3
-fdisk -path=/media/gerson/discos/disco1.dk  -type=l -unit=k -name = "newLogic3" -add=3
+#fdisk -path=/media/gerson/discos/disco1.dk  -type=l -unit=k -name = "newLogic3" -add=-1
 
 fdisk -name = maincra -delete=full -path=/media/gerson/discos/disco1.dk
 
@@ -34,8 +37,6 @@ mount -name = newLogic1 -path=/media/gerson/discos/disco1.dk
 
 mkfs -id=571A -type=full -fs=3fs
 
-rep -name=Mbr -id=571A -path=/media/gerson/discos/reportes/reporte
-
 #mkfile -path = "/hola.txt" -size=15 -r
 
 mkdir -path = "/" -p
@@ -44,7 +45,12 @@ mkdir -path = "/yea" -p
 mkdir -path = "/hola/aja" -p
 
 
-mkfile -path = "/hola/gg/elBicho.txt" -r -size=64 -cont=/media/gerson/PR1/holi.txt
+mkfile -path = "/hola/bea/elBicho.txt" -r -size=64 -cont=/media/gerson/PR1/holi.txt
 
+rep -name=Mbr -id=571A -path=/media/gerson/discos/reportes/reporte
 
-#mkfile -path = "/hola/gg/Hola/elBicho.txt" -r -size=64 -cont=/media/gerson/PR1/holi.txt
+rep -name=disk -id=571A -path=/media/gerson/discos/reportes/reporte
+
+rep -name=inode -id=571A -path=/media/gerson/discos/reportes/reporte
+
+rep -name=bloCk -id=571A -path=/media/gerson/discos/reportes/reporte

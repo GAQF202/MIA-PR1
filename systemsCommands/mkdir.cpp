@@ -392,14 +392,19 @@ void mkdirCmd::execute(){
                             }
                         }
                     }*/
-
                     InodeTable ver;
+                    /*for (int i=0; i<sizeof(bitinodes);i++){
+                        if(bitinodes[i] != '0'){
+                            fseek(file,superbloque.inode_start + i*sizeof(InodeTable), SEEK_SET);
+                            fread(&ver,sizeof(InodeTable),1,file);
+                            cout << ver.atime << endl;
+                        }
+                    }*/
 
                     //fseek(file,superbloque.inode_start,SEEK_SET);
                     //fread(&ver,sizeof(InodeTable),1,file);
 
                     //cout << ver.block[0] << endl;
-
                     fclose(file);
                 }else{
                     cout << "Error: la ruta no existe, para crearla usa el parámetro -p" << endl;

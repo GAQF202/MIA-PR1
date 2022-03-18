@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <fstream>
+#include <cmath>
 using namespace std;
 
 repCmd::repCmd(){}
@@ -25,6 +26,11 @@ void repCmd::assignParameters(parameter* directives[100], int size){
             }
         }
     }
+}
+
+// QUITA DECIMALES A UN INT Y LO CONVIERTE A STRING
+string truncateNumber(float v){
+    return  to_string(v).substr(0,to_string(v).find_last_of(".")+3);
 }
 
 string createTd(string content){
@@ -59,6 +65,19 @@ void repCmd::execute(){
     MBR mbr;
     fseek(file,0,SEEK_SET);
     fread(&mbr,sizeof(MBR),1,file);
+
+    // LEO TODO LO RELACIONADO AL SISTEMA DE ARCHIVOS
+    SuperBloque superbloque;
+    fseek(file,element->start + sizeof(Partition),SEEK_SET);
+    fread(&superbloque,sizeof(SuperBloque),1,file);
+
+    // CREACION DE ARRAYS PARA GUARDAR BITMAPS
+    char bitinodes[superbloque.inodes_count];
+    char bitblocks[superbloque.blocks_count];
+    fseek(file,superbloque.bm_inode_start,SEEK_SET);
+    fread(&bitinodes,sizeof(bitinodes),1,file);
+    fseek(file,superbloque.bm_block_start,SEEK_SET);
+    fread(&bitblocks,sizeof(bitblocks),1,file);
 
     if(this->name == "MBR"){
 
@@ -110,8 +129,8 @@ void repCmd::execute(){
                 htmlContent += "<tr>\n";htmlContent += createTd("part_status");aux = "";aux.push_back(temp.status);htmlContent += createTd(aux);htmlContent += "\n</tr>";
                 htmlContent += "<tr>\n";htmlContent += createTd("part_type");aux = "";aux.push_back(temp.type);htmlContent += createTd(aux);htmlContent += "\n</tr>";
                 htmlContent += "<tr>\n";htmlContent += createTd("part_fit");htmlContent += createTd(temp.fit);htmlContent += "\n</tr>";
-                htmlContent += "<tr>\n";htmlContent += createTd("part_start");htmlContent += createTd(std::to_string(temp.start));htmlContent += "\n</tr>";
-                htmlContent += "<tr>\n";htmlContent += createTd("part_size");htmlContent += createTd(std::to_string(temp.size));htmlContent += "\n</tr>";
+                htmlContent += "<tr>\n";htmlContent += createTd("part_start");htmlContent += createTd(std::to_string(temp.start + sizeof(Partition)));htmlContent += "\n</tr>";
+                htmlContent += "<tr>\n";htmlContent += createTd("part_size");htmlContent += createTd(std::to_string(temp.size - sizeof(Partition)));htmlContent += "\n</tr>";
                 htmlContent += "<tr>\n";htmlContent += createTd("part_name");htmlContent += createTd(temp.name);htmlContent += "\n</tr>";
 
                 // MIENTRAS NO SE LLEGUE AL FINAL DE LA LISTA
@@ -126,8 +145,8 @@ void repCmd::execute(){
                     htmlContent += "<tr>\n";htmlContent += createTd("part_status");aux = "";aux.push_back(temp.status);htmlContent += createTd(aux);htmlContent += "\n</tr>";
                     htmlContent += "<tr>\n";htmlContent += createTd("part_type");aux = "";aux.push_back(temp.type);htmlContent += createTd(aux);htmlContent += "\n</tr>";
                     htmlContent += "<tr>\n";htmlContent += createTd("part_fit");htmlContent += createTd(temp.fit);htmlContent += "\n</tr>";
-                    htmlContent += "<tr>\n";htmlContent += createTd("part_start");htmlContent += createTd(std::to_string(temp.start));htmlContent += "\n</tr>";
-                    htmlContent += "<tr>\n";htmlContent += createTd("part_size");htmlContent += createTd(std::to_string(temp.size));htmlContent += "\n</tr>";
+                    htmlContent += "<tr>\n";htmlContent += createTd("part_start");htmlContent += createTd(std::to_string(temp.start + sizeof(Partition)));htmlContent += "\n</tr>";
+                    htmlContent += "<tr>\n";htmlContent += createTd("part_size");htmlContent += createTd(std::to_string(temp.size - sizeof(Partition)));htmlContent += "\n</tr>";
                     htmlContent += "<tr>\n";htmlContent += createTd("part_name");htmlContent += createTd(temp.name);htmlContent += "\n</tr>";
                 }
 
@@ -159,39 +178,260 @@ void repCmd::execute(){
         //system("dot -Tpng /media/gerson/PR1/commands/ver.dot -o /media/gerson/PR1/commands/jiji.png");
     }else if(this->name == "DISK"){
 
-        string dotContent = "digraph{\ntbl[shape=plaintext\nlabel=<<table border='0' cellborder='1' color='blue' cellspacing='0'>\n";
+        float porcentage = 0;
+        string dotContent = "digraph html { abc [shape=none, margin=0, label=< \n \
+        <TABLE BORDER=\"1\" COLOR=\"#10a20e\" CELLBORDER=\"1\" CELLSPACING=\"3\" CELLPADDING=\"4\">";
+        string logicas = "\n<TR>";
+        string all_partitions="\n<TR>\n<TD COLOR=\"#75e400\" ROWSPAN=\"3\">MBR</TD>\n";
+        int availaible_space = 0;
 
         for(int i=0; i<4; i++){
-            //cout << mbr.partitions[i].name << endl;
             if(mbr.partitions[i].type != 'P'){
-
+                int colspan = 2;
                 Partition temp; // GUARDA EL TEMPORAL PARA RECORRER LA LISTA
 
                 // LEO LA PRIMERA PARTICION LOGICA A DONDE APUNTA LA EXTENDIDA Y ASIGNO A TEMP
                 fseek(file,mbr.partitions[i].next,SEEK_SET);
                 fread(&temp,sizeof(Partition),1,file);
+                // GRAFICA DE LOGICA
+                porcentage = ((static_cast<float>(temp.size) * 100) / mbr.size);
+                logicas += "\n<TD COLOR=\"#87b8a4\"> Lógica <BR/>"+truncateNumber(porcentage)+"%</TD>\n" ;
+                logicas += "\n<TD COLOR=\"#87b8a4\">EBR</TD>\n" ;
 
                 // MIENTRAS NO SE LLEGUE AL FINAL DE LA LISTA
                 while(temp.next != -1){
+                    colspan += 2;
                     fseek(file,temp.next,SEEK_SET);
                     fread(&temp,sizeof(Partition),1,file);
+                    // GRAFICA DE LOGICA
+                    porcentage = ((static_cast<float>(temp.size) * 100) / mbr.size);
+                    logicas += "\n<TD COLOR=\"#87b8a4\"> Lógica <BR/>"+truncateNumber(porcentage)+"%</TD>\n";
+                    logicas += "\n<TD COLOR=\"#87b8a4\">EBR</TD>\n" ;
+                }
+
+                // MIENTRAS NO LLEGUE A LA ULTIMA PARTICION
+                if(i!=3){
+                    // GRAFICA DE EXTENDIDA
+                    porcentage = ((static_cast<float>(mbr.partitions[i].size) * 100) / mbr.size);
+                    all_partitions += "\n<TD COLOR=\"#75e400\" COLSPAN=\""+std::to_string(colspan)+"\"> Extendida <BR/>"+truncateNumber(porcentage)+"%</TD>\n" ;
+
+                    if(mbr.partitions[i+1].size != -1){
+                        // CALCULO ESPACIO VACIO
+                        availaible_space = (mbr.partitions[i+1].start) - (mbr.partitions[i].start + mbr.partitions[i].size);
+                        // CALCULO PORCENTAJE
+                        porcentage = ((static_cast<float>(availaible_space) * 100) / mbr.size);
+                        if(porcentage > 0.8){
+                            all_partitions += "\n<TD COLOR=\"#75e400\" COLSPAN=\""+std::to_string(colspan)+"\"> Libre <BR/>"+truncateNumber(porcentage)+"%</TD>\n" ;
+                        }
+                    }
+                }else{
+                    // GRAFICA DE EXTENDIDA
+                    porcentage = ((static_cast<float>(mbr.partitions[i].size) * 100) / mbr.size);
+                    all_partitions += "\n<TD COLOR=\"#75e400\" ROWSPAN=\"3\"> Extendida <BR/>"+truncateNumber(porcentage)+"%</TD>\n" ;
+                    // CALCULO ESPACIO VACIO
+                    availaible_space = mbr.size - (mbr.partitions[i].start + mbr.partitions[i].size);
+                    // CALCULO PORCENTAJE
+                    porcentage = ((static_cast<float>(availaible_space) * 100) / mbr.size);
+                    if(porcentage > 0.8){
+                        all_partitions += "\n<TD COLOR=\"#75e400\" ROWSPAN=\"3\"> Libre <BR/>"+truncateNumber(porcentage)+"%</TD>\n" ;
+                    }
                 }
 
             }else{
                 // GRAFICO SOLO LAS PARTICIONES EXISTENTES
                 if(mbr.partitions[i].size != -1){
-                    dotContent += "<td rowspan='2'>" + (string)mbr.partitions[i].name + "<br/>" + (string)mbr.partitions[i].name + "</td>";
+                    // MIENTRAS NO LLEGUE A LA ULTIMA PARTICION
+                    if(i!=3){
+                        // GRAFICA DE PRIMARIA
+                        porcentage = ((static_cast<float>(mbr.partitions[i].size) * 100) / mbr.size);
+                        all_partitions += "\n<TD COLOR=\"#75e400\" ROWSPAN=\"3\"> Primaria <BR/>"+truncateNumber(porcentage)+"%</TD>\n" ;
+
+                        if(mbr.partitions[i+1].size != -1){
+                            // CALCULO ESPACIO VACIO
+                            availaible_space = (mbr.partitions[i+1].start) - (mbr.partitions[i].start + mbr.partitions[i].size);
+                            // CALCULO PORCENTAJE
+                            porcentage = ((static_cast<float>(availaible_space) * 100) / mbr.size);
+                            if(porcentage > 0.8){
+                                all_partitions += "\n<TD COLOR=\"#75e400\" ROWSPAN=\"3\"> Libre <BR/>"+truncateNumber(porcentage)+"%</TD>\n" ;
+                            }
+                        }else{
+                            // CALCULO ESPACIO VACIO
+                            availaible_space = mbr.size - (mbr.partitions[i].start + mbr.partitions[i].size);
+                            // CALCULO PORCENTAJE
+                            porcentage = round((static_cast<float>(availaible_space) * 100) / mbr.size);
+                            
+                            if(porcentage > 0.8){
+                                all_partitions += "\n<TD COLOR=\"#75e400\" ROWSPAN=\"3\"> Libre <BR/>"+truncateNumber(porcentage)+"%</TD>\n" ;
+                            }
+                        }
+                    }else{
+                        // GRAFICA DE PRIMARIA
+                        porcentage = round((static_cast<float>(mbr.partitions[i].size) * 100) / mbr.size);
+                        all_partitions += "\n<TD COLOR=\"#75e400\" ROWSPAN=\"3\"> Primaria <BR/>"+truncateNumber(porcentage)+"%</TD>\n" ;
+                        // CALCULO ESPACIO VACIO
+                        availaible_space = mbr.size - (mbr.partitions[i].start + mbr.partitions[i].size);
+                        // CALCULO PORCENTAJE
+                        porcentage = round((static_cast<float>(availaible_space) * 100) / mbr.size);
+                        if(porcentage > 0.8){
+                            all_partitions += "\n<TD COLOR=\"#75e400\" ROWSPAN=\"3\"> Libre <BR/>"+truncateNumber(porcentage)+"%</TD>\n" ;
+                        }
+                    }
                 }
             }
         }
 
-        dotContent += "</table>\n>];\n}";
-        //cout << htmlContent << endl;
 
-        //ofstream output_file;
-        //output_file.open(this->path + ".html");
-        //output_file << htmlContent << endl;
-        //output_file.close();
+        all_partitions += "</TR>\n";
+        logicas += "</TR>\n";
+        dotContent += all_partitions + logicas +"</TABLE>>];\n}";
+        //cout << dotContent << endl;
 
+        ofstream output_file;
+        output_file.open(this->path + ".dot");
+        output_file << dotContent << endl;
+        output_file.close();
+        
+        string command = "dot -Tpng " + this->path + ".dot" + " -o "+ this->path + ".png";
+        system(command.c_str());
+
+    } else if(this->name == "INODE"){
+        InodeTable temp_inode;
+        // CABECERA DEL GRAFO
+        string dotContent = "digraph reporte {\n fontname=\"Helvetica,Arial,sans-serif\" \n rankdir=LR; \n node [shape=box]; \n node [fontname=\"Helvetica,Arial,sans-serif\" \n]";
+
+        string nodes = "";
+        string edges = "";
+
+        // RECORRO INODOS
+        for (int i=0; i<sizeof(bitinodes);i++){
+            if(bitinodes[i] != '0'){
+                //cout << superbloque.inode_start + i*sizeof(InodeTable) << endl;
+                fseek(file,superbloque.inode_start + i*sizeof(InodeTable), SEEK_SET);
+                fread(&temp_inode,sizeof(InodeTable),1,file);
+                nodes += to_string(i) + "[label = \"\\n";  
+                nodes += "Inodo: " + to_string(i) + "\\n";
+                nodes += "i_uid: " + to_string(temp_inode.uid) + "\\n";
+                nodes += "i_gid: " + to_string(temp_inode.gid) + "\\n";
+                nodes += "i_size: " + to_string(temp_inode.size) + "\\n";
+                //cout << temp_inode.atime << endl;
+                nodes += "i_atime: " + (string)temp_inode.atime + "\\n";
+                nodes += "i_ctime: " + (string)temp_inode.ctime + "\\n";
+                nodes += "i_mtime: " + (string)temp_inode.mtime + "\\n";
+                for(int i=0; i<15; i++){
+                    nodes += "i_block_" + to_string(i+1) + ": " + to_string(temp_inode.block[i]) + "\\n";
+                }
+                //cout << temp_inode.atime << endl;
+                aux = ""; aux.push_back(temp_inode.type);
+                nodes += "i_type: " + aux + "\\n";
+                nodes += "i_perm: " + to_string(temp_inode.perm) + "\\n";
+
+                nodes += "\"]"; 
+            }
+        }
+
+        // CREO LOS NODOS CON SUS ARISTAS
+        int previous_inode=0;
+        for(int i_inode=0; i_inode<sizeof(bitinodes); i_inode++){
+            if(bitinodes[i_inode] != '0'){
+                if((i_inode != sizeof(bitinodes)) && i_inode != 0){
+                    edges += to_string(previous_inode) + "->" + to_string(i_inode) + "\n";
+                    previous_inode = i_inode;
+                }
+            }
+        }
+
+        dotContent += nodes;
+        dotContent += edges;
+        dotContent += "}";
+        //cout << dotContent << endl;
+
+        ofstream output_file;
+        output_file.open(this->path + ".dot");
+        output_file << dotContent << endl;
+        output_file.close();
+        
+        string command = "dot -Tpng " + this->path + ".dot" + " -o "+ this->path + ".png";
+        system(command.c_str());
+    } else if(this->name == "BLOCK"){
+        // VARIABLE PARA RECORRER INODOS
+        InodeTable temp_inode;
+
+        // VARIABLES PARA MOSTRAR TODOS LOS TIPOS DE BLOQUES
+        FileBlock file_block;
+        ArchiveBlock archive_block;
+
+        // CABECERA DEL GRAFO
+        string dotContent = "digraph reporte {\n fontname=\"Helvetica,Arial,sans-serif\" \n rankdir=LR; \n node [shape=box]; \n node [fontname=\"Helvetica,Arial,sans-serif\" \n]";
+
+        string nodes = "";
+        string edges = "";
+        
+
+        // RECORRO INODOS
+        for (int i=0; i<sizeof(bitinodes);i++){
+            // SI NO ES UN INODO LIBRE 
+            if(bitinodes[i] != '0'){
+                // LEO EL INODO
+                fseek(file,superbloque.inode_start + i*sizeof(InodeTable), SEEK_SET);
+                fread(&temp_inode,sizeof(InodeTable),1,file);
+                for(int block_index=0; block_index<14; block_index++){
+                    if(temp_inode.block[block_index] != -1){
+                        // SI ES UN NODO DE ARCHIVO
+                        if(temp_inode.type == '1'){
+                            //cout << temp_inode.block[block_index] << endl;
+                            fseek(file,superbloque.block_start + temp_inode.block[block_index]*sizeof(ArchiveBlock), SEEK_SET);
+                            fread(&archive_block,sizeof(ArchiveBlock),1,file);
+                            nodes += to_string(temp_inode.block[block_index]) + "[label = \"\\n"; 
+                            nodes += "Bloque: " + to_string(temp_inode.block[block_index]) + "\n";
+                            int new_line = 0; 
+                            for(int content=0; content<64; content++){
+                                nodes += archive_block.content[content];
+                                if(new_line == 16){
+                                    nodes += "\\n";
+                                    new_line = 0;
+                                }
+                                new_line++;
+                            }
+                            nodes += "\"]"; 
+                        }else if(temp_inode.type == '0'){ // SI ES UN BLOQUE DE CARPETA
+                            fseek(file,superbloque.block_start + temp_inode.block[block_index]*sizeof(FileBlock), SEEK_SET);
+                            fread(&file_block,sizeof(FileBlock),1,file);
+                            nodes += to_string(temp_inode.block[block_index]) + "[align=left,label = \"\\n";
+                            nodes += "Bloque: " + to_string(temp_inode.block[block_index]) + "\n";
+                            nodes += "b_name        b_inodo \\n";
+                            for(int content=0; content<4; content++){
+                                //cout << temp_inode.block[block_index] << " " << file_block.content[content].name << endl;
+                                nodes += (string)file_block.content[content].name + "   ->   " + to_string(file_block.content[content].inodo) + "\\n\n";
+                            }
+                            nodes += "\"]"; 
+                        }
+                    }
+                }
+            }
+        }
+
+        // CREO LOS NODOS CON SUS ARISTAS
+        int previous_block=0;
+        for(int i_block=0; i_block<sizeof(bitblocks); i_block++){
+            if(bitblocks[i_block] != '0'){
+                if((i_block != sizeof(bitblocks)) && i_block != 0){
+                    edges += to_string(previous_block) + "->" + to_string(i_block) + "\n";
+                    previous_block = i_block;
+                }
+            }
+        }
+
+        dotContent += nodes;
+        dotContent += edges;
+        dotContent += "}";
+        //cout << dotContent << endl;
+        ofstream output_file;
+        output_file.open(this->path + ".dot");
+        output_file << dotContent << endl;
+        output_file.close();
+        
+        string command = "dot -Tpng " + this->path + ".dot" + " -o "+ this->path + ".png";
+        system(command.c_str());
     }
+    fclose(file);
 }
