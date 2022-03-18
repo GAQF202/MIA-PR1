@@ -37,6 +37,10 @@ string createTd(string content){
     return "<td>" + content + "</td>";
 }
 
+string createPortTd(string content,string port){
+    return "<td port=\""+ port +"\">" + content + "</td>";
+}
+
 string createTh(string content, string className){
     return "<th class=\"" + className + "\">" + content + "</th>";
 }
@@ -513,6 +517,96 @@ void repCmd::execute(){
         output_file.open(this->path + ".html");
         output_file << html_content << endl;
         output_file.close();
+
+    }else if(this->name == "TREE"){
+        // VARIABLE PARA RECORRER INODOS
+        InodeTable temp_inode;
+
+        // VARIABLES PARA MOSTRAR TODOS LOS TIPOS DE BLOQUES
+        FileBlock file_block;
+        ArchiveBlock archive_block;
+
+        
+        string nodes = "";
+        string blocks = "";
+        string edges = "";
+
+        string dotContent = "digraph {\ngraph [pad=\"0.5\", nodesep=\"0.5\", ranksep=\"2\"];\nnode [shape=plain]\nrankdir=LR;";
+        
+
+        // RECORRO INODOS
+        for (int i=0; i<sizeof(bitinodes);i++){
+            // SI NO ES UN INODO LIBRE 
+            if(bitinodes[i] != '0'){
+                // LEO EL INODO
+                fseek(file,superbloque.inode_start + i*sizeof(InodeTable), SEEK_SET);
+                fread(&temp_inode,sizeof(InodeTable),1,file);
+
+                nodes += "inode"+ to_string(i) +" [label=< \n <table border=\"0\" cellborder=\"1\" cellspacing=\"0\"> \n";
+                nodes += "<tr><td bgcolor=\"#01f5ab\">INODE</td><td bgcolor=\"#01f5ab\">" + to_string(i) + "</td></tr>\n";
+                nodes += "<tr>";nodes += createPortTd("UID","");nodes += createPortTd(to_string(temp_inode.uid),"");nodes += "</tr>\n";
+                nodes += "<tr>";nodes += createPortTd("GID","");nodes += createPortTd(to_string(temp_inode.gid),"");nodes += "</tr>\n";
+
+                nodes += "<tr>";nodes += createPortTd("SIZE","");nodes += createPortTd(to_string(temp_inode.size),"");nodes += "</tr>\n";
+                nodes += "<tr>";nodes += createPortTd("LECTURA","");nodes += createPortTd(string(temp_inode.atime),"");nodes += "</tr>\n";
+                nodes += "<tr>";nodes += createPortTd("CREACION","");nodes += createPortTd(string(temp_inode.ctime),"");nodes += "</tr>\n";
+                nodes += "<tr>";nodes += createPortTd("MODIFICACION","");nodes += createPortTd(string(temp_inode.mtime),"");nodes += "</tr>\n";
+
+                for(int block_index=0; block_index<14; block_index++){
+                    nodes += "<tr>";nodes += createPortTd("AP"+to_string(block_index),"");nodes += createPortTd(to_string(temp_inode.block[block_index]),"i"+to_string(i)+"b"+to_string(temp_inode.block[block_index]));nodes += "</tr>\n";
+                    if(temp_inode.block[block_index] != -1){
+                        edges += "inode" + to_string(i) + ":i"+to_string(i)+"b"+to_string(temp_inode.block[block_index]) + "->" + "block"+ to_string(temp_inode.block[block_index]) + ";\n";
+                        // SI ES UN NODO DE ARCHIVO
+                        if(temp_inode.type == '1'){
+                            fseek(file,superbloque.block_start + temp_inode.block[block_index]*sizeof(ArchiveBlock), SEEK_SET);
+                            fread(&archive_block,sizeof(ArchiveBlock),1,file);
+                            // ENCABEZDO DEL BLOQUE
+                            blocks += "block"+ to_string(temp_inode.block[block_index]) +" [label=< \n <table border=\"0\" cellborder=\"1\" cellspacing=\"0\"> \n";
+                            blocks += "<tr><td bgcolor=\"#f6ec1e\">BLOCK</td><td bgcolor=\"#f6ec1e\">" + to_string(temp_inode.block[block_index]) + "</td></tr>\n";
+                            // ESCRIBO EL CONTENIDO
+                            string block_content = "";
+                            for(int con=0; con<64; con++){
+                                block_content += archive_block.content[con];
+                            }
+                            blocks += "<tr><td colspan=\"2\">" + block_content + "</td></tr>\n";
+                            // CIERRO TABLA
+                            blocks += "</table>>]; \n";
+                        }else if(temp_inode.type == '0'){ // SI ES UN BLOQUE DE CARPETA
+                            fseek(file,superbloque.block_start + temp_inode.block[block_index]*sizeof(FileBlock), SEEK_SET);
+                            fread(&file_block,sizeof(FileBlock),1,file);
+                            // ENCABEZDO DEL BLOQUE
+                            blocks += "block"+ to_string(temp_inode.block[block_index]) +" [label=< \n <table border=\"0\" cellborder=\"1\" cellspacing=\"0\"> \n";
+                            blocks += "<tr><td bgcolor=\"#f61e73\">BLOCK</td><td bgcolor=\"#f61e73\">" + to_string(temp_inode.block[block_index]) + "</td></tr>\n";
+                            for(int content=0; content<4; content++){
+                                blocks += "<tr>" + createPortTd((string)file_block.content[content].name,"") + createPortTd(to_string(file_block.content[content].inodo),"b"+to_string(temp_inode.block[block_index])+"i"+to_string(file_block.content[content].inodo)) + "</tr>\n";
+                                if((file_block.content[content].inodo != -1) && (string)file_block.content[content].name != "." && (string)file_block.content[content].name != ".." ){
+                                    edges += "block" + to_string(temp_inode.block[block_index]) + ":b"+to_string(temp_inode.block[block_index])+"i"+to_string(file_block.content[content].inodo) + "->" + "inode"+ to_string(file_block.content[content].inodo) + ";\n";
+                                }
+                            }
+                            blocks += "</table>>]; \n";
+                        }
+                    }
+                }
+                nodes += "<tr>";nodes += createPortTd("TIPO","");nodes += createPortTd(to_string(temp_inode.type),"");nodes += "</tr>\n";
+                nodes += "<tr>";nodes += createPortTd("PERMISOS","");nodes += createPortTd(to_string(temp_inode.perm),"");nodes += "</tr>\n";
+                
+                nodes += "</table>>]; \n";
+            }
+        }
+
+        dotContent += nodes;
+        dotContent += blocks;
+        dotContent += edges;
+        dotContent += "\n}";
+        //cout << dotContent << endl;
+        ofstream output_file;
+        output_file.open(this->path + ".dot");
+        output_file << dotContent << endl;
+        output_file.close();
+        
+        string command = "dot -Tsvg " + this->path + ".dot" + " -o "+ this->path + ".svg";
+        system(command.c_str());
+    
     }
 
     fclose(file);

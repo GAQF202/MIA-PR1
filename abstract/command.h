@@ -134,6 +134,20 @@ class repCmd : public command{
         string ruta;
 };
 
+// PAUSE
+class pauseCmd : public command{
+    public:
+        pauseCmd();
+        void assignParameters(parameter* directives[100], int size);
+        void execute();
+        
+        //PARAMETROS
+        string path;
+        string name;
+        string id;
+        string ruta;
+};
+
 // -------------------------- COMANDOS PARA INODOS --------------------------
 
 // MKFILE

@@ -44,6 +44,7 @@ BLANK_SPACE [\t\r\f\n" "\"]
 "login"       { yylval.TEXT = (char*)"rep"; return rep; }
 
 "exec"      { yylval.TEXT = (char*)"exec"; return exec; }
+"pause"     { yylval.TEXT = (char*)"pause"; return pausa; }
 "rep"       { yylval.TEXT = (char*)"rep"; return rep; }
 
 "mkfile"    { yylval.TEXT = (char*)"mkfile"; return mkfile; }
@@ -77,6 +78,6 @@ BLANK_SPACE [\t\r\f\n" "\"]
 
 
 {BLANK_SPACE} {}
-{COMMENT} {}
+{COMMENT} { cout << yytext << endl;} // IMPRIMO LOS COMENTARIOS
 . yyerror("mincra");
 %%

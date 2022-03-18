@@ -49,6 +49,7 @@
 %token<TEXT> mkfs;
 %token<TEXT> login;
 %token<TEXT> exec;
+%token<TEXT> pausa;
 %token<TEXT> rep;
 %token<TEXT> mkfile;
 %token<TEXT> mkdir;
@@ -163,6 +164,14 @@ START : START mkdisk MKDISKPAR
       | START mkdir MKDIRPAR
       {
         mkdirCmd *c = new mkdirCmd(); c->assignParameters($3->cola,$3->size);c->execute();
+      }
+      | START pausa
+      {
+        pauseCmd *c = new pauseCmd();c->execute();
+      }
+      | pausa
+      {
+        pauseCmd *c = new pauseCmd();c->execute();
       }
       | mkdir MKDIRPAR
       {

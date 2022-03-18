@@ -60,3 +60,9 @@ rep -name=bm_Inode -id=571A -path=/media/gerson/discos/reportes/reporte_inodes
 rep -name=bm_BlOck -id=571A -path=/media/gerson/discos/reportes/reporte_blockes
 
 rep -name=sB -id=571A -path=/media/gerson/discos/reportes/sb
+
+
+rep -name=Tree -id=571A -path=/media/gerson/discos/reportes/tree
+
+
+Pause

@@ -89,7 +89,7 @@ void mkfsCmd::execute(){
             
             // GUARDO LA FECHA 
             string current_date = get_now();
-            strcpy(super_bloque.umtime,current_date.c_str());
+            strcpy(super_bloque.mtime,current_date.c_str());
 
             // ESCRIBO EL SUPERBLOQUE
             fseek(file,real_partition.start+sizeof(Partition),SEEK_SET);

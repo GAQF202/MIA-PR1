@@ -57,29 +57,30 @@ extern int yydebug;
     mkfs = 263,
     login = 264,
     exec = 265,
-    rep = 266,
-    mkfile = 267,
-    mkdir = 268,
-    size = 269,
-    adjustment = 270,
-    unit = 271,
-    path = 272,
-    type = 273,
-    deleteToken = 274,
-    name = 275,
-    add = 276,
-    id = 277,
-    fs = 278,
-    ruta = 279,
-    r = 280,
-    cont = 281,
-    p = 282,
-    number = 283,
-    CADENA = 284,
-    caracter = 285,
-    identificador = 286,
-    equals = 287,
-    slash = 288
+    pausa = 266,
+    rep = 267,
+    mkfile = 268,
+    mkdir = 269,
+    size = 270,
+    adjustment = 271,
+    unit = 272,
+    path = 273,
+    type = 274,
+    deleteToken = 275,
+    name = 276,
+    add = 277,
+    id = 278,
+    fs = 279,
+    ruta = 280,
+    r = 281,
+    cont = 282,
+    p = 283,
+    number = 284,
+    CADENA = 285,
+    caracter = 286,
+    identificador = 287,
+    equals = 288,
+    slash = 289
   };
 #endif
 
@@ -97,7 +98,7 @@ union YYSTYPE
     float flotante;
     int entero;
 
-#line 101 "parser.h"
+#line 102 "parser.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
