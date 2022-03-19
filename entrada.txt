@@ -10,13 +10,13 @@ mkdisk  -path = "/media/gerson/discos/disco1.dk" -unit=k -fit=wf -size=91
 
 fdisk -size=5 -path=/media/gerson/discos/disco1.dk  -type=p -fit=bf -unit=k -name = "particion3" #-add=54646
 
-fdisk -size=25 -path=/media/gerson/discos/disco1.dk  -type=e -fit=bf -unit=k -name = "particion1" #-add=54646
+fdisk -size=40 -path=/media/gerson/discos/disco1.dk  -type=e -fit=bf -unit=k -name = "particion1" #-add=54646
 
 fdisk -size=10 -path=/media/gerson/discos/disco1.dk   -fit=bf -unit=k -name = "particion0"
 
 fdisk -size=10 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = "yea"
 
-fdisk -size=1 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = "newLogic"
+fdisk -size=15 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = "newLogic"
 
 fdisk -size=1 -path=/media/gerson/discos/disco1.dk  -type=l -fit=bf -unit=k -name = "newLogic1"
 
@@ -29,13 +29,19 @@ fdisk -path=/media/gerson/discos/disco1.dk   -unit=k -name = "newLogic3" -add=1
 
 fdisk -name = maincra -delete=full -path=/media/gerson/discos/disco1.dk
 
+
 mount -name = yea -path=/media/gerson/discos/disco1.dk
 mount -name = newLogic -path=/media/gerson/discos/disco1.dk
 mount -name = newLogic1 -path=/media/gerson/discos/disco1.dk
-mount -name = newLogic1 -path=/media/gerson/discos/disco1.dk
+unmount -id=571B
+mount -name = newLogic -path=/media/gerson/discos/disco1.dk
 #unmount -id=571A
 
 mkfs -id=571A -type=full -fs=3fs
+
+mkfs -id=571B -type=full -fs=3fs
+
+#mkfs -id=571A -type=full -fs=3fs
 
 login -id=571A -password=12334 -usuario=roots
 
@@ -57,14 +63,14 @@ logout
 
 #mkfile -path = "/hola/elBicho.txt" -r -size=64 -cont=/media/gerson/PR1/holi.txt
 
-#rep -name=Mbr -id=571A -path=/media/gerson/discos/reportes/reporte
-#rep -name=disk -id=571A -path=/media/gerson/discos/reportes/reporte
+rep -name=Mbr -id=571A -path=/media/gerson/discos/reportes/reporte.pdf
+rep -name=disk -id=571A -path=/media/gerson/discos/reportes/reporte
 #rep -name=inode -id=571A -path=/media/gerson/discos/reportes/reporte
-#rep -name=bloCk -id=571A -path=/media/gerson/discos/reportes/reporte
+rep -name=bloCk -id=571A -path=/media/gerson/discos/reportes/siuuu.pdf
 #rep -name=bm_Inode -id=571A -path=/media/gerson/discos/reportes/reporte_inodes
-#rep -name=bm_BlOck -id=571A -path=/media/gerson/discos/reportes/reporte_blockes
+#rep -name=bm_BlOck -id=571A -path=/media/gerson/discos/reportes/reporte_blockes.pdf
 #rep -name=sB -id=571A -path=/media/gerson/discos/reportes/sb
-#rep -name=Tree -id=571A -path=/media/gerson/discos/reportes/tree
+rep -name=Tree -id=571B -path=/media/gerson/discos/reportes/tree
 
 
 #Pause

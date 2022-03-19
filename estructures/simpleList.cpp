@@ -74,6 +74,8 @@ void lista::Borrar(string v){
        return;
    }
    else { // Borrar el nodo
+      //cout << "Estoooo" << nodo->valor[3] << endl;
+      this->eliminarLetra(nodo->valor[3]);
       if(!anterior) // Primer elemento
          primero = nodo->siguiente;
       else  // un elemento cualquiera
@@ -107,7 +109,7 @@ void lista::Mostrar() {
       aux = aux->siguiente;
    }
    cout << endl;
-}
+} 
 
 string getIdPartition(int number){
     string res;
@@ -119,11 +121,35 @@ string getIdPartition(int number){
     return res;
 }
 
+string lista :: getLetter(){
+    string res;
+    for(int let=1; let<23; let++){
+        if(this->letras[let] == -1){
+            res = getIdPartition(let);
+            this->letras[let] = 0;
+            break;
+        }
+    }
+    //cout << res << endl;
+    return res;
+}
+
+void lista :: eliminarLetra(char letra){
+    int count = 0;
+    for(int i='A'; i<'Z'; i++){
+        count++;
+        if(letra == i){
+            this->letras[count] = -1;
+        }
+    }
+}
+
 string lista :: getId(string myDisk){
     for(int i=0; i<600; i++){
         if(this->disks[i].name == myDisk){
             disks[i].amount++;
-            return "57" + to_string(disks[i].number) + getIdPartition(disks[i].amount);
+            //this->getLetter();
+            return "57" + to_string(disks[i].number) + this->getLetter(); //+ getIdPartition(disks[i].amount);
         }
     }
 
@@ -132,7 +158,8 @@ string lista :: getId(string myDisk){
     this->disks[this->disksCount].name = myDisk;
     this->disks[this->disksCount].number = this->disksCount;
     this->disks[this->disksCount].amount++;
-    return "57" + to_string(disks[this->disksCount].number) + getIdPartition(disks[this->disksCount].amount);
+    //this->getLetter();
+    return "57" + to_string(disks[this->disksCount].number) + this->getLetter(); //getIdPartition(disks[this->disksCount].amount);
 }
 
 /*

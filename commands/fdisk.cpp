@@ -69,7 +69,7 @@ void fdiskCmd::assignParameters(parameter* directives[100], int size){
             }else if(strcmp(directives[i]->name,(char*)"-delete") == 0){
                 this->deleted = directives[i]->stringValue;
             }else if(strcmp(directives[i]->name,(char*)"-name") == 0){
-                this->name = directives[i]->stringValue;
+                this->name = toMayus(directives[i]->stringValue);
             }else if(strcmp(directives[i]->name,(char*)"-add") == 0){
                 this->add = directives[i]->intValue;
             }
@@ -138,45 +138,94 @@ void fdiskCmd::execute(){
                     this->sortPartitions(mbr.partitions);
 
                     if(this->deleted != ""){
-                        int start_partition; // GUARDA LA PARTICION ENCONTRADA
-                        int end_partition; 
-                        Partition void_partition;
-                        int index_partition = -1; // BANDERA QUE INDICA SI EXISTE LA PARTICION
-
-                        // RECORRE LAS PARTICIONES DEL MBR
-                        for(int p=0; p<4; p++){
-                            if(mbr.partitions[p].name == this->name){
-                                start_partition = mbr.partitions[p].start;
-                                end_partition = start_partition + mbr.partitions[p].size;
-                                index_partition = p;
+                        if(this->type == "L"){
+                            for(int p=0; p<4; p++){
+                                if(mbr.partitions[p].type == 'E'){
+                                    extended_index = p;
+                                    break;
+                                }
                             }
-                        }  
-                        // VALIDA QUE LA PARTICION HAYA SIDO ENCONTRADA  
-                        if(index_partition == -1){
-                            cout << "Error: al eliminar la partición "<< this->name <<" debido a que no se encontró en el disco" << endl;
-                        // SI NO HAY ERROR CALCULO EL ESPACIO LIBRE A UTILIZAR
-                        }else{
-                            char blank_space = '\0';
-                            // LLENO CON CEROS TODAS LAS POSICIONES QUE OCUPA EN EL ARCHIVO LA PARTICION
-                            for(int i=start_partition; i<end_partition;i++){
-                                fseek(file,i,SEEK_SET);
-                                fwrite(&blank_space,sizeof(blank_space),1,file);
+                            Partition extended; // STRUCT PARTICION EXTENDIDA ENCONTRADA
+                            Partition logical; // STRUCT PARTICION LOGICA A ESCRIBIR
+                            int initialStart; // GUARDA EL ESPACIO INICIAL DE ESCRITURA
+                            int void_space = 0;
+                            //GUARDO LA PARTICION EXTENDIDA
+                            extended = mbr.partitions[extended_index];
+                            
+                            fseek(file,extended.next,SEEK_SET);
+                            fread(&logical,sizeof(Partition),1,file);
+                            // VARIABLE PARA GUARDAR EL NODO ANTERIOR
+                            Partition previous;
+                            
+                            while(logical.next != -1){
+                                // SI ENCUENTRA LA PARTICION DETIENE LA BUSQUEDA
+                                if(logical.name == this->name){
+                                    char blank_space = '\0';
+                                    // LLENO CON CEROS TODAS LAS POSICIONES QUE OCUPA EN EL ARCHIVO LA PARTICION
+                                    cout << "Estoooo " << logical.start << " " << logical.start+logical.size << endl;
+                                    for(int i=logical.start; i<(logical.start+logical.size);i++){
+                                        fseek(file,i,SEEK_SET);
+                                        fwrite(&blank_space,sizeof(blank_space),1,file);
+                                    }
+                                    Partition next;
+                                    if(logical.next != -1){
+                                        fseek(file,logical.next,SEEK_SET);
+                                        fread(&next,sizeof(Partition),1,file);
+                                        previous.next = next.start;
+                                    }
+                                    break;
+                                }
+                                previous = logical; // GUARDO EL ANTERIOR
+                                fseek(file,logical.next,SEEK_SET);
+                                fread(&logical,sizeof(Partition),1,file);
                             }
-
-                            // CREO UNA PARTICION VACIA
-                            strcpy(void_partition.name,"siu");
-                            void_partition.status = '0';
-                            void_partition.type = 'P';
-                            void_partition.start = -1;
-                            void_partition.size = -1;
-                            strcpy( void_partition.fit,"");
-                            void_partition.next = -1;
-                            mbr.partitions[index_partition] = void_partition;
-
-                            //REESCRIBO EL MBR CON LA PARTICION YA ELIMINADA
-                            fseek(file,0,SEEK_SET);
-                            fwrite(&mbr,sizeof(MBR),1,file);
+                            
+                            // SOBREESCRIBO LA PARTICION LOGICA
+                            fseek(file,previous.start,SEEK_SET);
+                            fwrite(&previous,sizeof(Partition),1,file);
                             fclose(file);
+
+                        }else{
+                            int start_partition; // GUARDA LA PARTICION ENCONTRADA
+                            int end_partition; 
+                            Partition void_partition;
+                            int index_partition = -1; // BANDERA QUE INDICA SI EXISTE LA PARTICION
+
+                            // RECORRE LAS PARTICIONES DEL MBR
+                            for(int p=0; p<4; p++){
+                                if(mbr.partitions[p].name == this->name){
+                                    start_partition = mbr.partitions[p].start;
+                                    end_partition = start_partition + mbr.partitions[p].size;
+                                    index_partition = p;
+                                }
+                            }  
+                            // VALIDA QUE LA PARTICION HAYA SIDO ENCONTRADA  
+                            if(index_partition == -1){
+                                cout << "Error: al eliminar la partición "<< this->name <<" debido a que no se encontró en el disco" << endl;
+                            // SI NO HAY ERROR CALCULO EL ESPACIO LIBRE A UTILIZAR
+                            }else{
+                                char blank_space = '\0';
+                                // LLENO CON CEROS TODAS LAS POSICIONES QUE OCUPA EN EL ARCHIVO LA PARTICION
+                                for(int i=start_partition; i<end_partition;i++){
+                                    fseek(file,i,SEEK_SET);
+                                    fwrite(&blank_space,sizeof(blank_space),1,file);
+                                }
+
+                                // CREO UNA PARTICION VACIA
+                                strcpy(void_partition.name,"siu");
+                                void_partition.status = '0';
+                                void_partition.type = 'P';
+                                void_partition.start = -1;
+                                void_partition.size = -1;
+                                strcpy( void_partition.fit,"");
+                                void_partition.next = -1;
+                                mbr.partitions[index_partition] = void_partition;
+
+                                //REESCRIBO EL MBR CON LA PARTICION YA ELIMINADA
+                                fseek(file,0,SEEK_SET);
+                                fwrite(&mbr,sizeof(MBR),1,file);
+                                fclose(file);
+                            }
                         }
                         return;
                     }

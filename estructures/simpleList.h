@@ -34,7 +34,12 @@ typedef nodo *pnodo;
 
 class lista {
    public:
-    lista() { primero = actual = NULL; }
+    lista() { primero = actual = NULL; 
+      // INICIALIZO MIS LETRAS EN -1
+      for(int i=0; i<23; i++){
+         this->letras[i] = -1;
+      }
+   }
     ~lista();
 
     void Insertar(string v, string name, int start);
@@ -49,10 +54,14 @@ class lista {
     pnodo getElement(string v);
     string ValorActual() { return actual->valor; }
     string getId(string myDisk);
+    string getLetter();
+    void eliminarLetra(char letra);
         
     int count; //  CONTADOR PARA SABER CUANTOS ELEMENTOS HAY EN LA LISTA
     int disksCount; // CONTADOR PARA SABER QUE CANTIDAD DE DISCOS HAY MONTADOS
     UsingDisk disks[600];
+
+    int letras[23];
 
    private:
     pnodo primero;

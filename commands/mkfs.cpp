@@ -28,9 +28,9 @@ void mkfsCmd::execute(){
         pnodo partition_found;
 
         partition_found = global_list.getElement(this->id);
+
         if(partition_found){
             Partition real_partition;
-
             FILE *file = fopen(partition_found->path_disk.c_str(),"rb+");
             // VERIFICA QUE EL DISCO SI EXISTA EN LA RUTA ESPECIFICADA
             if(!file){
@@ -132,7 +132,7 @@ void mkfsCmd::execute(){
             c->path = "/";
             c->p = "-p";
             c->execute();
-
+            
             // CREO EL ARCHIVO DE users.txt EN LA RAIZ
             mkfileCmd *d = new mkfileCmd();
             d->anyText = "1,G,root\n1,U,root,root,1234\n";
@@ -141,6 +141,8 @@ void mkfsCmd::execute(){
             d->r = "-r";
             d->size = 0;
             d->execute();
+
+            //cout << "llegaaaa" << endl;
 
             //LOGOUT
             global_user.logged = -1;

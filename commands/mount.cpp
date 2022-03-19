@@ -21,7 +21,7 @@ void mountCmd::assignParameters(parameter* directives[100], int size){
             if(strcmp(directives[i]->name,(char*)"-path") == 0){
                 this->path = directives[i]->stringValue;
             }else if(strcmp(directives[i]->name,(char*)"-name") == 0){
-                this->name = directives[i]->stringValue;
+                this->name = toMayus(directives[i]->stringValue);
             }
         }
     }
@@ -76,6 +76,11 @@ void mountCmd::execute(){
             temp.status = '1';
             fseek(file,temp.start,SEEK_SET);
             fwrite(&temp,sizeof(Partition),1,file);
+            /*cout << endl;
+            for(int i=0; i<23; i++){
+                cout << global_list.letras[i];
+            }*/
+            //global_list.Mostrar();
         }else{
             cout << "Aviso: la partición "<< temp.name <<" ya está montada en RAM" << endl;
         }

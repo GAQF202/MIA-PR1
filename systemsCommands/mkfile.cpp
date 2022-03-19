@@ -95,7 +95,6 @@ void mkfileCmd::execute(){
             // LEO EL PRIMER INODO
             fseek(file,superbloque.inode_start,SEEK_SET);
             fread(&temp_inode,sizeof(InodeTable),1,file);
-
             //cout << temp_inode.block[0] << superbloque.inode_start << endl;
             
             //bool exist_route = false;
