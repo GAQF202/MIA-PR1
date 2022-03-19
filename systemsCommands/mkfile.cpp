@@ -33,6 +33,12 @@ void mkfileCmd::assignParameters(parameter* directives[100], int size){
 }
 
 void mkfileCmd::execute(){
+
+    if(global_user.logged == -1){
+        cout << "Error: Para utilizar mkfile necesitas estar logueado" << endl;
+        return;
+    }
+
     // OBTENGO LA INFORMACION DE LA PARTICION 
     pnodo element = global_list.getElement(global_user.id_partition);
 

@@ -41,7 +41,8 @@ BLANK_SPACE [\t\r\f\n" "\"]
 "mount"     { yylval.TEXT = (char*)"mount"; return mount; }
 "unmount"   { yylval.TEXT = (char*)"unmount"; return unmount; }
 "mkfs"      { yylval.TEXT = (char*)"mkfs"; return mkfs; }
-"login"       { yylval.TEXT = (char*)"rep"; return rep; }
+"login"     { yylval.TEXT = (char*)"login"; return login; }
+"logout"    { yylval.TEXT = (char*)"logout"; return logout; }
 
 "exec"      { yylval.TEXT = (char*)"exec"; return exec; }
 "pause"     { yylval.TEXT = (char*)"pause"; return pausa; }
@@ -64,6 +65,8 @@ BLANK_SPACE [\t\r\f\n" "\"]
 "-ruta"     { yylval.TEXT = (char*)"-ruta"; return ruta; }
 "-r"        { yylval.TEXT = (char*)"-r"; return r; }
 "-cont"     { yylval.TEXT = (char*)"-cont"; return cont; }
+"-usuario"  { yylval.TEXT = (char*)"-usuario"; return usuario; }
+"-password" { yylval.TEXT = (char*)"-password"; return password; }
 
 
 

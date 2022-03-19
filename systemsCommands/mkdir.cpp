@@ -27,6 +27,12 @@ void mkdirCmd::assignParameters(parameter* directives[100], int size){
 }
 
 void mkdirCmd::execute(){
+
+    if(global_user.logged == -1){
+        cout << "Error: Para utilizar mkdir necesitas estar logueado" << endl;
+        return;
+    }
+
     // OBTENGO LA INFORMACION DE LA PARTICION 
     pnodo element = global_list.getElement(global_user.id_partition);
 
@@ -41,7 +47,7 @@ void mkdirCmd::execute(){
         vector<string> routes = split(this->path,'/');
         int number_routes = routes.size();
         routes.at(0) = "/";
-        
+
         // NOMBRE DEL ARCHIVO
         string file_name = routes.at(routes.size() - 1).c_str();
 

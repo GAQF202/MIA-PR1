@@ -48,6 +48,7 @@
 %token<TEXT> unmount;
 %token<TEXT> mkfs;
 %token<TEXT> login;
+%token<TEXT> logout;
 %token<TEXT> exec;
 %token<TEXT> pausa;
 %token<TEXT> rep;
@@ -69,6 +70,8 @@
 %token<TEXT> r;
 %token<TEXT> cont;
 %token<TEXT> p;
+%token<TEXT> password;
+%token<TEXT> usuario;
 
 // TYPES
 %token<TEXT> number; // "int"
@@ -100,6 +103,8 @@
 %type<parametro> R;
 %type<parametro> CONT;
 %type<parametro> P;
+%type<parametro> PASSWORD;
+%type<parametro> USUARIO;
 
 //COMMANDS
 %type<queueT> MKDISKPAR;
@@ -112,6 +117,7 @@
 %type<queueT> REPPAR;
 %type<queueT> MKFILEPAR;
 %type<queueT> MKDIRPAR;
+%type<queueT> LOGINPAR;
 %type<TEXT> DIRECTORY;
 
 %start START
@@ -168,6 +174,22 @@ START : START mkdisk MKDISKPAR
       | START pausa
       {
         pauseCmd *c = new pauseCmd();c->execute();
+      }
+      | START login LOGINPAR
+      {
+        loginCmd *c = new loginCmd(); c->assignParameters($3->cola,$3->size);c->execute();
+      }
+      | START logout
+      {
+        logoutCmd *c = new logoutCmd();c->execute();
+      }
+      | logout
+      {
+        logoutCmd *c = new logoutCmd();c->execute();
+      }
+      | login LOGINPAR
+      {
+        loginCmd *c = new loginCmd(); c->assignParameters($2->cola,$2->size);c->execute();
       }
       | pausa
       {
@@ -254,6 +276,13 @@ MKFSPAR : MKFSPAR ID {queue *res = new queue();$1->push($2);res->append($1);$$ =
          | FS {queue *res = new queue();res->push($1);$$ = res;}
          | TYPEFORMAT {queue *res = new queue();res->push($1);$$ = res;}
          | ID {queue *res = new queue();res->push($1);$$ = res;}
+
+LOGINPAR : LOGINPAR USUARIO {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | LOGINPAR PASSWORD {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | LOGINPAR ID {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
+         | ID {queue *res = new queue();res->push($1);$$ = res;}
+         | PASSWORD {queue *res = new queue();res->push($1);$$ = res;}
+         | USUARIO {queue *res = new queue();res->push($1);$$ = res;}
 
 MKFILEPAR: MKFILEPAR PATH {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
          | MKFILEPAR R {queue *res = new queue();$1->push($2);res->append($1);$$ = res;}
@@ -429,6 +458,13 @@ ID : id equals identificador
      {  
         $$ = make_parameter($1,$3,0); 
      } 
+
+PASSWORD : password equals identificador{$$ = make_parameter($1,$3,0);} 
+         | password equals CADENA{$$ = make_parameter($1,$3,0);} 
+         | password equals number{$$ = make_parameter($1,$3,0);} 
+
+USUARIO  : usuario equals identificador{$$ = make_parameter($1,$3,0);} 
+         | usuario equals CADENA{$$ = make_parameter($1,$3,0);} 
 
 FS : fs equals identificador 
      {  

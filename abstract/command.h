@@ -148,6 +148,29 @@ class pauseCmd : public command{
         string ruta;
 };
 
+// -------------------------- COMANDOS PARA USUARIOS --------------------------
+
+// LOGIN
+class loginCmd : public command{
+    public:
+        loginCmd();
+        void assignParameters(parameter* directives[100], int size);
+        void execute();
+        
+        //PARAMETROS
+        string usuario;
+        string password;
+        string id;
+};
+
+// LOGOUT
+class logoutCmd : public command{
+    public:
+        logoutCmd();
+        void assignParameters(parameter* directives[100], int size);
+        void execute();
+};
+
 // -------------------------- COMANDOS PARA INODOS --------------------------
 
 // MKFILE
